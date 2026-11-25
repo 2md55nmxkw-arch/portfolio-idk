@@ -7,6 +7,7 @@
 [![Website](https://img.shields.io/badge/site-2md.space-b72733.svg)](https://2md.space)
 [![Stack](https://img.shields.io/badge/stack-HTML%20%C2%B7%20CSS%20%C2%B7%20JS-141212.svg)](#how-it-works)
 [![Build](https://img.shields.io/badge/build%20step-none-141212.svg)](#run-it)
+[![License: MIT](https://img.shields.io/badge/license-MIT-b72733.svg)](LICENSE)
 
 [Website](https://2md.space) · [Changelog](https://2md.space/changelog.html) · [Projects](#projects-on-the-site)
 
@@ -28,6 +29,7 @@ The source of **[2md.space](https://2md.space)**: a portfolio that looks like a 
 - [Tools](#tools)
 - [Deployment](#deployment)
 - [Projects on the site](#projects-on-the-site)
+- [License](#license)
 - [Credits](#credits)
 
 ## What's inside
@@ -134,6 +136,12 @@ The site is hosted on Vercel as plain static files. The Vercel project is linked
 - [kimera](https://github.com/2md55nmxkw-arch/kimera): a browser art piece with Kasane Teto ([open it](https://2md55nmxkw-arch.github.io/kimera/)).
 - [endfield-il2dump](https://github.com/2md55nmxkw-arch/endfield-il2dump): an offline IL2CPP metadata dumper for Unity x64.
 - [Loliland-ModLoader](https://github.com/2md55nmxkw-arch/Loliland-ModLoader): a Windows mod loader for Loliland launcher builds.
+
+## License
+
+The code and documentation in this repository are released under the **[MIT License](LICENSE)**.
+
+The 2MD55.ARCH name and logo, the Kasane Teto artwork and the third-party fonts and icon listed below are not covered by MIT.
 
 ## Credits
 
