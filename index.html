@@ -39,10 +39,13 @@
 <body>
 
   <!-- ============ LOADING SCREEN ============
-       Positions are in pixels of the reference picture (assets/source/loader.webp, 508 x 336). -->
+       Positions are in pixels of the reference picture (assets/source/loader.webp, 508 x 336;
+       the whole animation it comes from is assets/source/loader.gif). -->
   <div class="loader">
     <div class="loader__stage">
       <img class="loader__art" src="assets/img/loader.webp" width="1118" height="739" alt="" fetchpriority="high" decoding="async">
+      <!-- she wakes up as the bar fills: four drawings side by side; js/loader.js picks one (data-wake on the stage) -->
+      <span class="loader__wake"><img src="assets/img/loader-wake.webp" width="2376" height="407" alt="" decoding="sync"></span>
 
       <span class="loader__glow"></span>
       <span class="loader__blink"><i></i><i></i></span>
@@ -82,6 +85,9 @@
         </defs>
         <use href="#lg-0"/><use/><use/><use href="#lg-pct" x="12"/>
       </svg>
+
+      <!-- the last frame: "READY." takes the place of the label, the bar and the number -->
+      <img class="loader__ready" src="assets/img/loader-ready.webp" width="341" height="107" alt="" decoding="sync">
     </div>
   </div>
 

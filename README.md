@@ -107,7 +107,7 @@ tools/            scripts that generate shapes, textures, art and the changelog
 
 - **Sized like the mockups.** Every measurement is a fraction of the page width (`--u` is the width divided by 667, through container query units), so the composition keeps its proportions from a phone to a desktop. The home page has two layouts that switch at 820px.
 - **Torn paper is real HTML.** The ragged outlines are SVG masks in `css/shapes.css`, laid over raster paper textures. The notes, lists and headings on the paper are live text: they can be selected, translated and read by a screen reader.
-- **The loading screen shows real progress.** It follows the fonts and images of the page as they arrive and lifts when they are in. Its lettering and digits are drawn as SVG strokes, so it needs no font itself.
+- **The loading screen shows real progress.** It follows the fonts and images of the page as they arrive and lifts when they are in. The girl in the picture sleeps while the bar fills, wakes up near the end, and the screen lifts on "READY.". Its lettering and digits are drawn as SVG strokes, so it needs no font itself.
 - **Sections come alive on scroll.** Each one plays its entrance once, when it comes into view: sheets drop, tape sticks, pen lines draw, handwriting appears from left to right. The choreography is in `css/reveal.css`.
 - **Small things.** The header stays on screen and its red tag follows the section you are reading. Gallery photos open in a native `<dialog>` with keyboard and swipe navigation. Only text can be selected, never the pictures.
 - **It degrades gently.** With `prefers-reduced-motion` the animations are off. Without JavaScript the page simply shows, with no loading screen.

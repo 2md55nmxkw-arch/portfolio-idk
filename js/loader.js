@@ -1,5 +1,6 @@
-// Loading screen: fills the bar with real progress (fonts + every picture on the page),
-// then fades away. The page is already laid out underneath.
+// Loading screen: fills the bar with real progress (fonts + every picture on the page);
+// the girl in the picture sleeps while it fills, wakes up near the end, and the screen
+// lifts on "READY.". The page is already laid out underneath.
 (() => {
   const root = document.documentElement;
   const loader = document.querySelector('.loader');
@@ -7,11 +8,17 @@
 
   const MIN_TIME = 1700;  // ms - the bar never fills faster than this, so the screen does not just flash by
   const MAX_TIME = 12000; // ms - never keep a visitor waiting behind the screen
-  const HOLD = 350;       // ms - pause at 100% before the screen lifts
+  const HOLD = 600;       // ms - "READY." stays this long before the screen lifts
+  // waking up, as in the reference animation (assets/source/loader.gif)
+  const WAKE_AT = [0.76, 0.92, 1]; // how full the bar is when she opens her eyes, lifts her head, sits up
+  const FRAME_TIME = 180; // ms - a drawing stays at least this long
+  const SIT_TIME = 240;   // ms - sitting up with her eyes still shut, before "READY."
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const page = document.querySelector('.page');
+  const stage = loader.querySelector('.loader__stage');
   const art = loader.querySelector('.loader__art');
+  const wakeArt = loader.querySelector('.loader__wake img');
   const bar = loader.querySelector('.loader__bar');
   const fill = loader.querySelector('.loader__fill');
   const glyphs = [...loader.querySelectorAll('.loader__pct > use')]; // three digits + the percent sign
@@ -90,6 +97,17 @@
     setTimeout(remove, 1200);
   }
 
+  // ---------- waking up ----------
+  // 0 asleep, 1 eyes open, 2 head up, 3 sitting up, 4 "READY." (css/loader.css shows the drawing)
+  let wake = 0;
+  let wakeSince = 0;
+  const setWake = (n, now) => {
+    wake = n;
+    wakeSince = now;
+    stage.dataset.wake = n;
+  };
+  const canWake = () => wakeArt && wakeArt.complete && wakeArt.naturalWidth > 0;
+
   const start = performance.now();
   let last = start;
   let shown = 0;
@@ -102,8 +120,23 @@
     last = now;
     if (target >= 1 && shown > 0.994) shown = 1;
     draw(shown);
-    if (shown < 1) requestAnimationFrame(frame);
-    else setTimeout(finish, reduced ? 0 : HOLD);
+
+    if (reduced) {                 // no motion wanted: she sleeps on, the screen simply lifts
+      if (shown >= 1) return finish();
+      return requestAnimationFrame(frame);
+    }
+
+    const want = WAKE_AT.filter((at) => shown >= at).length;
+    const since = now - wakeSince;
+    if (wake < want && (wake === 0 || since >= FRAME_TIME)) {
+      if (canWake()) setWake(wake + 1, now);
+      else if (shown >= 1) setWake(4, now);  // her drawings never arrived: straight to "READY."
+    } else if (wake === 3 && shown >= 1 && since >= SIT_TIME) {
+      setWake(4, now);
+    } else if (wake === 4 && since >= HOLD) {
+      return finish();
+    }
+    requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 })();
