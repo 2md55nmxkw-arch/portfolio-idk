@@ -1,9 +1,11 @@
 // 0401 — the hidden reel.
-// A little film drawn on a canvas: our Teto dances through 17 poses, one per beat, in front of the
-// site's own city and room, between two strips of film. There is no player: it loads, starts and loops.
+// A little film drawn on a canvas: our Teto dances in front of the site's own city and room, between
+// two strips of film. There is no player: it loads, starts and loops.
 //
-// The sound (assets/soundtrack.mp3) is the audio of the short video this page grew out of: 16 seconds of
-// music at 120 beats a minute, then a quiet second and a half. The dance is timed to it.
+// The dance re-stages a short video frame for frame (14 frames a second). motion.js says, for every
+// frame, which pose she is in, where she stands, how she is stretched, what the camera does and how
+// bright the picture is; the drawings are ours (dancer.js), the sound (assets/soundtrack.mp3) is the
+// video's own: 16 seconds of music, then a quiet second and a half.
 //
 // Sound: browsers only let a page play audio by itself if the visitor has already interacted with
 // the site (for example, arrived here through the hidden trigger on the main page). Otherwise the
@@ -13,19 +15,16 @@
 
   const W = 1024;
   const H = 576;
-  const FPS = 14;                 // the picture moves in steps, like a hand-drawn film
-  const BEAT = 0.5;               // seconds: the soundtrack runs at 120 beats a minute
-  const BEATS = 32;
-  const DANCE_TIME = BEAT * BEATS;   // 16 seconds of dancing
-  const FIRST_BEAT = 0.12;        // where the first beat falls in the soundtrack
-  let loop = 17.65;               // the whole soundtrack; replaced by its exact length once it is decoded
+  const MOTION = window.REEL_MOTION;
+  const FPS = MOTION.fps;
+  const FRAMES = MOTION.frames;
+  const DANCE_TIME = FRAMES.length / FPS;   // 16 seconds
+  let loop = 17.65;                         // the whole soundtrack; replaced by its exact length once it is decoded
 
   const INK = '#12100f';
-  const CREAM = '#e9bfa9';
   const STRIP_Y = 77;             // the picture between the two film edges
   const STRIP_H = 422;
-  const GROUND = 492;             // where her feet stand
-  const SIZE = 0.86;              // sprite pixels -> stage pixels
+  const SIZE = 0.82;              // our drawings -> the size the figure has in the video
 
   const POSES = window.REEL_DANCER;
   const canvas = document.getElementById('reel');
@@ -34,49 +33,28 @@
   const noteText = document.getElementById('note-text');
   const subtitles = document.getElementById('subtitles');
 
-  // ---------- the dance: one pose per beat ----------
-  // [pose, x at the start of the beat, x at its end, extras]; x is where her feet are on the stage
-  const PASS = [
-    ['sneak', 70, 210],
-    ['march', 250, 350],
-    ['runbow', 400, 540, { trail: true }],
-    ['lunge', 560],
-    ['squat', 560],
-    ['jump', 560, 560, { hop: 70 }],
-    ['bow', 560],
-    ['headache', 560, 560, { shake: true }],
-    ['star', 512],
-    ['spin', 512, 512, { spin: true }],
-    ['wink', 512],
-    ['sway', 512, 512, { sway: true }],
-    ['strut', 540, 690],
-    ['cheer', 740, 740, { hop: 26 }],
-    ['banzai', 740, 740, { hop: 42 }],
-    ['collapse', 760, 760, { drop: true }],
-  ];
-  const step = ([pose, x0, x1 = x0, extra = {}], flip = false) => ({ pose, x0, x1, flip, ...extra });
-  // second half: she gets up and dances it back the other way, mirrored
-  const DANCE = [
-    ...PASS.map((s) => step(s)),
-    step(['idle', 760]),
-    ...PASS.slice(1).map(([pose, x0, x1 = x0, extra]) => step([pose, W - x0, W - x1, extra], true)),
-  ];
-
-  // ---------- the camera: one view per bar (four beats) ----------
-  // [backdrop, zoom, x at the start of the bar, x at its end, y] in pixels of the backdrop
+  // ---------- the camera: the video cuts between four views; these are ours ----------
+  // [backdrop, zoom, x at the start of the pan, x at its end, y] in pixels of the backdrop
   const VIEWS = [
     ['city', 0.74, 30, 108, 3],
-    ['city', 1, 249, 249, 96],
-    ['room', 1, 0, 150, 0],
-    ['city', 1, 90, 10, 150],
-    ['city', 0.74, 108, 30, 3],
-    ['room', 1, 170, 40, 0],
-    ['city', 1, 410, 496, 150],
-    ['city', 1, 249, 249, 60],
+    ['city', 1, 222, 276, 84],
+    ['room', 1, 20, 150, 0],
+    ['city', 1, 428, 496, 150],
   ];
 
-  // the site's own words, two bars each
+  // the site's own words; the video changes its caption eight times, we go through ours twice
   const CAPTIONS = ['taking games and runtimes apart,', 'seeing how they work,', 'and building my own tools from it.', '0401'];
+  const captionOf = (frame) => {
+    let n = 0;
+    while (n + 1 < MOTION.captions.length && MOTION.captions[n + 1] <= frame) n += 1;
+    return n % CAPTIONS.length;
+  };
+  // how many frames ago the camera last cut (for the flash on a cut)
+  const sinceCut = FRAMES.map((f, i) => {
+    let k = 0;
+    while (i - k > 0 && FRAMES[i - k - 1][5] === f[5] && k < 20) k += 1;
+    return k;
+  });
 
   // ---------- loading ----------
   const plates = {};
@@ -112,7 +90,7 @@
         c.drawImage(shade, Math.cos((a * Math.PI) / 6) * 4.5, Math.sin((a * Math.PI) / 6) * 4.5);
       }
       c.drawImage(atlas, p.u, p.v, p.w, p.h, PAD, PAD, p.w, p.h);
-      dancer[name] = { cut, shade, ax: p.ax + PAD, h: p.h + PAD };
+      dancer[name] = { cut, shade, middle: p.cx + PAD, bottom: p.h + PAD };
     }
   }
 
@@ -147,12 +125,12 @@
   edge.addColorStop(0.84, 'rgba(18,16,15,0)');
   edge.addColorStop(1, 'rgba(18,16,15,0.55)');
 
-  function drawBackdrop(bar, inBar) {
-    const [name, zoom, x0, x1, y] = VIEWS[bar];
+  function drawBackdrop(view, pan) {
+    const [name, zoom, x0, x1, y] = VIEWS[view];
     const img = plates[name];
     const sw = W / zoom;
     const sh = STRIP_H / zoom;
-    const sx = Math.max(0, Math.min(img.width - sw, x0 + (x1 - x0) * inBar));
+    const sx = Math.max(0, Math.min(img.width - sw, x0 + (x1 - x0) * pan));
     const sy = Math.max(0, Math.min(img.height - sh, y));
     ctx.drawImage(img, sx, sy, sw, sh, 0, STRIP_Y, W, STRIP_H);
     ctx.fillStyle = 'rgba(18,16,15,0.2)';        // a little darker, so the dancer leads
@@ -161,8 +139,22 @@
     ctx.fillRect(0, STRIP_Y, W, STRIP_H);
   }
 
-  function drawFilm(pos) {
-    const shift = (pos * 96) % 180;              // the film runs
+  // the exposure of the video, frame by frame, plus a flash where the camera cuts
+  function drawLight(light, cutAge) {
+    const flash = 0.34 * Math.exp(-cutAge * 0.55);
+    const up = Math.max(0, light) * 0.45 + flash;
+    if (up > 0.01) {
+      ctx.fillStyle = `rgba(241,217,204,${Math.min(0.6, up).toFixed(3)})`;
+      ctx.fillRect(0, STRIP_Y, W, STRIP_H);
+    }
+    if (light < -0.02) {
+      ctx.fillStyle = `rgba(18,16,15,${Math.min(0.5, -light * 0.8).toFixed(3)})`;
+      ctx.fillRect(0, STRIP_Y, W, STRIP_H);
+    }
+  }
+
+  function drawFilm(time) {
+    const shift = (time * 96) % 180;             // the film runs
     ctx.lineWidth = 1.5;
     for (const y of [22, 524]) {
       for (let x = -shift - 20; x < W + 20; x += 180) {
@@ -176,32 +168,15 @@
     }
   }
 
-  function drawDancer(s, t, frame) {
-    const d = dancer[s.pose];
-    const ease = 1 - (1 - t) * (1 - t);
-    let x = s.x0 + (s.x1 - s.x0) * ease;
-    let lift = 0;
-    if (s.hop) lift = s.hop * Math.sin(Math.PI * Math.min(1, t / 0.85));
-    if (s.drop) lift = 46 * Math.max(0, 1 - t * 4);
-    if (s.shake) x += frame % 2 ? 4 : -4;
-    if (s.sway) x += 12 * Math.sin(t * Math.PI * 2);
-    const pop = Math.exp(-t * 7);                 // a little stretch as each pose lands
-    const sx = (s.flip ? -1 : 1) * SIZE * (1 - 0.05 * pop);
-    const sy = SIZE * (1 + 0.09 * pop);
-
-    const place = (image, dx, alpha) => {
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.translate(Math.round(x + dx), Math.round(GROUND - lift));
-      ctx.scale(sx, sy);
-      ctx.drawImage(image, -d.ax, -d.h);
-      ctx.restore();
-    };
-    // pale after-images on the fast moves
-    const dir = Math.sign(s.x1 - s.x0);
-    if (s.trail && t < 0.8) { place(d.shade, -dir * 84, 0.14); place(d.shade, -dir * 44, 0.28); }
-    if (s.spin && t < 0.6) { place(d.shade, -36, 0.2); place(d.shade, 36, 0.2); }
-    place(d.cut, 0, 1);
+  // one frame of the dance: [pose, x of her middle, y of her lowest point, width %, height %, ...]
+  function drawFigure(f, image, alpha) {
+    const d = dancer[MOTION.poses[f[0]]];
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(f[1], f[2]);
+    ctx.scale((SIZE * f[3]) / 100, (SIZE * f[4]) / 100);
+    ctx.drawImage(d[image], -d.middle, -d.bottom);
+    ctx.restore();
   }
 
   function drawCaption(index) {
@@ -238,33 +213,27 @@
     const frame = Math.floor(((pos % loop) + loop) % loop * FPS + 1e-6);
     if (frame === shownFrame && !force) return;
     shownFrame = frame;
-    const time = Math.max(0, frame / FPS - FIRST_BEAT);   // since the first beat; everything moves on the frame grid
-    const beat = Math.min(BEATS - 1, Math.floor(time / BEAT));
-    const inBeat = Math.min(1, time / BEAT - beat);
-    const bar = Math.floor(beat / 4);
-    const inBar = Math.min(1, (time - bar * 4 * BEAT) / (4 * BEAT));
     // after the dance the music dies away: she stays where she fell and the picture goes dark
-    const tail = loop - FIRST_BEAT - DANCE_TIME;
-    const dark = Math.max(0, Math.min(1, (time - DANCE_TIME - (tail - 0.7)) / 0.7));
+    const at = Math.min(frame, FRAMES.length - 1);
+    const f = FRAMES[at];
+    const tail = loop - DANCE_TIME;
+    const dark = Math.max(0, Math.min(1, (frame / FPS - DANCE_TIME - (tail - 0.7)) / 0.7));
 
     ctx.fillStyle = INK;
     ctx.fillRect(0, 0, W, H);
-    drawBackdrop(bar, inBar);
-
-    // the light jumps on every bar and breathes on every beat
-    const flash = 0.42 * Math.exp(-inBar * 4 * BEAT * 7) + 0.06 * Math.exp(-inBeat * 6);
-    ctx.fillStyle = `rgba(241,217,204,${flash.toFixed(3)})`;
-    ctx.fillRect(0, STRIP_Y, W, STRIP_H);
-
+    drawBackdrop(f[5], f[6] / 100);
+    drawLight(f[7] / 100, frame < FRAMES.length ? sinceCut[at] : 99);
     drawWear(frame);
     drawFilm(frame / FPS);
-    drawDancer(DANCE[beat], inBeat, frame);   // over the film edges: a jump breaks out of the frame
+    // the pale after-image of an earlier frame (fainter than in the video: ours is a flat silhouette)
+    if (f[8] >= 0 && frame < FRAMES.length) drawFigure(FRAMES[f[8]], 'shade', (f[9] / 100) * 0.5);
+    drawFigure(f, 'cut', 1);                      // over the film edges, as in the video
     if (dark > 0) {
       ctx.fillStyle = `rgba(18,16,15,${(dark * 0.92).toFixed(3)})`;
       ctx.fillRect(0, 0, W, H);
     }
 
-    const caption = Math.floor(bar / 2);
+    const caption = captionOf(at);
     drawCaption(caption);
     if (caption !== shownCaption) { subtitles.textContent = CAPTIONS[caption]; shownCaption = caption; }
   }
