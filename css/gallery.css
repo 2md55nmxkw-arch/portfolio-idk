@@ -1,0 +1,183 @@
+/* =========================================================
+   GALLERY
+   Five photos pinned in a row. Each photo is its own image, placed with
+   --x / --y / --w (desktop) and --xm / --ym / --wm (mobile), so it can be
+   swapped for a real screenshot later. Numbers are reference pixels from
+   the top-left corner of the section.
+   ========================================================= */
+
+.gallery {
+  position: relative;
+  height: calc(var(--u) * 245);
+}
+
+.gallery > * { position: absolute; }
+
+/* ---------- scraps and strokes behind the photos ---------- */
+.gallery__decor {
+  left: 0;
+  top: calc(var(--u) * 4);
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+/* ---------- heading ---------- */
+.gallery__tag {
+  --shape: var(--shape-strip-3);
+  left: calc(var(--u) * 46);
+  top: calc(var(--u) * 9.75);
+  height: 1.49em;
+  padding-inline: 0.5em;
+  font-size: calc(var(--u) * 26.8);
+  letter-spacing: -0.02em;
+  rotate: -7.5deg;
+}
+
+.gallery__camera {
+  left: calc(var(--u) * 189.5);
+  top: calc(var(--u) * 10.5);
+  width: calc(var(--u) * 31);
+  height: calc(var(--u) * 27);
+  fill: none;
+  stroke: #c5343f;
+  stroke-width: 1.7;
+  stroke-linejoin: round;
+  rotate: -5deg;
+}
+
+.gallery__camera circle {
+  stroke: var(--paper-dim);
+  stroke-width: 2.3;
+}
+
+/* ---------- handwritten line (desktop only) ---------- */
+.gallery__text {
+  left: calc(var(--u) * 58.2);
+  top: calc(var(--u) * 64.7);
+  margin: 0;
+  font-family: "Kalam", "Segoe Print", "Comic Sans MS", cursive;
+  font-size: calc(var(--u) * 11.8);
+  line-height: 1.127;
+  white-space: nowrap;
+  color: rgb(239 213 200 / 0.9);
+  -webkit-text-stroke: calc(var(--u) * 0.22) currentColor;
+  transform: rotate(-8deg);
+  transform-origin: 0 0;
+}
+
+.gallery__text span { padding-left: 3.38em; }
+
+/* ---------- photos ---------- */
+.gallery__list {
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shot {
+  position: absolute;
+  left: calc(var(--u) * var(--x));
+  top: calc(var(--u) * var(--y));
+  width: calc(var(--u) * var(--w));
+  filter: drop-shadow(0 calc(var(--u) * 1.2) calc(var(--u) * 2) rgb(0 0 0 / 0.5));
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* the first and fourth photos lie on top of their neighbours */
+.shot:nth-child(1),
+.shot:nth-child(4) { z-index: 1; }
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* the photo is a link to its big copy; js opens it in the lightbox */
+.shot__open {
+  display: block;
+  cursor: zoom-in;
+}
+
+.shot:hover {
+  z-index: 2;
+  transform: translateY(calc(var(--u) * -2)) rotate(-0.8deg);
+}
+
+.shot:nth-child(even):hover { transform: translateY(calc(var(--u) * -2)) rotate(0.8deg); }
+
+/* ---------- "..." tag: more ---------- */
+.gallery__more {
+  --w: 48;
+  left: calc(var(--u) * 587.6);
+  top: calc(var(--u) * 182.5);
+  z-index: 3;
+  height: calc(var(--u) * 27);
+  justify-content: center;
+  gap: calc(var(--u) * 4.1);
+  rotate: 2.5deg;
+}
+
+.gallery__more i {
+  width: calc(var(--u) * 3.4);
+  height: calc(var(--u) * 3.4);
+  border-radius: 50%;
+  background: var(--ink-soft);
+}
+
+/* on screens wider than the page column, let the scraps fade out at the sides */
+@media (min-width: 1201px) {
+  .gallery__decor {
+    -webkit-mask: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    mask: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  }
+}
+
+/* =========================================================
+   MOBILE (second mockup): just the heading and the photos.
+   ========================================================= */
+@media (max-width: 820px) {
+  .gallery { height: calc(var(--u) * 172); }
+
+  .gallery__decor,
+  .gallery__text { display: none; }
+
+  .gallery__tag {
+    left: calc(var(--u) * 36.8);
+    top: calc(var(--u) * 13.4);
+    height: 1.48em;
+    padding-inline: 0.5em;
+    font-size: calc(var(--u) * 28);
+    rotate: -8.4deg;
+  }
+
+  .gallery__camera {
+    left: calc(var(--u) * 190);
+    top: calc(var(--u) * 7);
+    width: calc(var(--u) * 34);
+    height: calc(var(--u) * 28);
+    rotate: -6deg;
+  }
+
+  .shot {
+    left: calc(var(--u) * var(--xm));
+    top: calc(var(--u) * var(--ym));
+    width: calc(var(--u) * var(--wm));
+  }
+
+  .gallery__more {
+    --w: 56;
+    left: calc(var(--u) * 580);
+    top: calc(var(--u) * 136.5);
+    height: calc(var(--u) * 28);
+    gap: calc(var(--u) * 3.2);
+    rotate: 2deg;
+  }
+
+  .gallery__more i {
+    width: calc(var(--u) * 5.4);
+    height: calc(var(--u) * 5.4);
+  }
+}

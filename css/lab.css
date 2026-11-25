@@ -1,0 +1,156 @@
+/* =========================================================
+   LAB
+   Heading and a handwritten line on the dark page, an illustration of
+   the old machine on the desk, and (desktop) a checklist pinned to the wall.
+   Numbers are reference pixels from the top-left corner of the section.
+   ========================================================= */
+
+.lab {
+  position: relative;
+  height: calc(var(--u) * 190);
+}
+
+.lab > *,
+.lab__art { position: absolute; }
+
+/* ---------- illustration (full width; dark background keyed out) ---------- */
+.lab__art {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+/* ---------- heading ---------- */
+.lab__tag {
+  --shape: var(--shape-strip-1);
+  left: calc(var(--u) * 46);
+  top: calc(var(--u) * 37.5);
+  font-size: calc(var(--u) * 28.5);
+  letter-spacing: 0;
+  rotate: -6deg;
+}
+
+.lab__slashes {
+  left: calc(var(--u) * 140.5);
+  top: calc(var(--u) * 40);
+  width: calc(var(--u) * 35.5);
+  height: calc(var(--u) * 26);
+  color: #be2c38;
+}
+
+/* ---------- handwritten line ---------- */
+.lab__text {
+  left: calc(var(--u) * 70);
+  top: calc(var(--u) * 88.6);
+  margin: 0;
+  font-family: "Kalam", "Segoe Print", "Comic Sans MS", cursive;
+  font-size: calc(var(--u) * 12.2);
+  line-height: 1.418;
+  white-space: nowrap;
+  color: rgb(239 213 200 / 0.9);
+  -webkit-text-stroke: calc(var(--u) * 0.22) currentColor;
+  transform: rotate(-4.4deg);
+  transform-origin: 0 0;
+}
+
+/* ---------- checklist note ---------- */
+.lab__note {
+  left: calc(var(--u) * 495);
+  top: calc(var(--u) * 14);
+  width: calc(var(--u) * 140);
+  height: calc(var(--u) * 134);
+}
+
+.lab__sheet { --shape: var(--shape-lab-note); }
+
+.lab__sheet::before {
+  background:
+    linear-gradient(170deg, rgb(222 190 174 / 0.55), rgb(205 168 153 / 0.7)),
+    var(--tex-paper) 60% 30% / calc(var(--u) * 150) auto;
+}
+
+.checklist {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+  padding: calc(var(--u) * 20.4) 0 0 calc(var(--u) * 34.3);
+  list-style: none;
+  font-family: "Kalam", "Segoe Print", "Comic Sans MS", cursive;
+  font-size: calc(var(--u) * 13.7);
+  line-height: 1;
+  white-space: nowrap;
+  color: rgb(28 20 20 / 0.94);
+  -webkit-text-stroke: calc(var(--u) * 0.2) currentColor;
+  transform: rotate(4.4deg);
+  transform-origin: 0 0;
+}
+
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--u) * 8.7);
+  height: calc(var(--u) * 25.1);
+}
+
+.checklist li > span { margin-top: calc(var(--u) * -1.6); }
+
+.checklist__box {
+  flex: none;
+  width: calc(var(--u) * 12);
+  height: calc(var(--u) * 12);
+  overflow: visible;
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.is-done .checklist__box { stroke: #c5343f; }
+
+/* on screens wider than the page column, let the desk fade out at the sides */
+@media (min-width: 1201px) {
+  .lab__art {
+    -webkit-mask: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    mask: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  }
+}
+
+/* =========================================================
+   MOBILE (second mockup): no checklist, bigger type;
+   the cat on the monitor pokes out above the section.
+   ========================================================= */
+@media (max-width: 820px) {
+  .lab { height: calc(var(--u) * 132); }
+
+  .lab__art { top: calc(var(--u) * -10); }
+
+  .lab__note { display: none; }
+
+  .lab__tag {
+    left: calc(var(--u) * 38);
+    top: calc(var(--u) * 14.3);
+    padding-inline: 0.55em;
+    font-size: calc(var(--u) * 30.5);
+    letter-spacing: 0.04em;
+    rotate: -7.5deg;
+  }
+
+  .lab__slashes {
+    left: calc(var(--u) * 134);
+    top: calc(var(--u) * 15);
+    width: calc(var(--u) * 41);
+    height: calc(var(--u) * 30);
+  }
+
+  .lab__text {
+    left: calc(var(--u) * 60);
+    top: calc(var(--u) * 63.3);
+    font-size: calc(var(--u) * 15.2);
+    line-height: 1.138;
+    transform: rotate(-2.5deg);
+  }
+}

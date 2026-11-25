@@ -1,0 +1,84 @@
+{
+  "_readme": "The releases shown on changelog.html, newest first. After editing run: node tools/build-changelog.mjs. 'version' is what the red tag says (a version, or a word such as 'update'); 'title' and 'label' are optional, so is 'short' (a shorter title for the Notes list on the main page, which shows the three newest entries); each item is [kind, text] with kind = added | fixed | changed | removed.",
+  "_sources": "tzar-hub: its own changelog (src/components/landing/changelog-data.ts), wording kept, the kind of each item chosen here; v1.0.0 = package.json at the first public commit. kimera: summary of the commits of 2026-11-23..24, v0.1.0 = package.json. endfield-il2dump: commit messages and repository description. loliland-modloader: GitHub release v1.0.1 and README.",
+  "projects": {
+    "tzar-hub": { "name": "Tzar-Hub", "icon": "crown", "repo": "https://github.com/2md55nmxkw-arch/tzar-hub" },
+    "kimera": { "name": "Kimera", "icon": "wings", "repo": "https://github.com/2md55nmxkw-arch/kimera" },
+    "endfield-il2dump": { "name": "Endfield-IL2Dump", "icon": "layers", "repo": "https://github.com/2md55nmxkw-arch/endfield-il2dump" },
+    "loliland-modloader": { "name": "Loliland-Modloader", "icon": "puzzle", "repo": "https://github.com/2md55nmxkw-arch/Loliland-ModLoader" }
+  },
+  "releases": [
+    {
+      "project": "kimera", "version": "v0.1.0", "date": "2026-11-24", "title": "First public version",
+      "items": [
+        ["added", "Published on GitHub Pages, with the model and the Mesmerizer dance built into the site."],
+        ["added", "Eight records, each with its own dance and a stage show in time with the song."],
+        ["added", "A revolving stage with three sets, stage light and real shadows."],
+        ["added", "A programme page, posters, a 404 page and a closing curtain."],
+        ["changed", "The pencil-sketch skin draws three times faster."]
+      ]
+    },
+    {
+      "project": "tzar-hub", "version": "v1.0.0", "date": "2026-11-15", "title": "Keyless and open source", "label": "Cmdr Panel preview",
+      "items": [
+        ["changed", "No more keys, checkpoints, paid plans or accounts. Every script just runs."],
+        ["added", "A first look at the Cmdr Panel, still in development: a command bar on ;, key binds, panels and game modules in one place."],
+        ["added", "The whole hub is readable on the new Source page, file by file."],
+        ["changed", "Old key and pricing links still work and lead to the guide or the home page."]
+      ]
+    },
+    {
+      "project": "tzar-hub", "version": "update", "date": "2026-11-12", "title": "Accessories stay on with game rules", "short": "Accessories stay on", "label": "Avatar Changer",
+      "items": [
+        ["fixed", "Turning on Game rules no longer drops the accessories of the look you wear."]
+      ]
+    },
+    {
+      "project": "tzar-hub", "version": "update", "date": "2026-11-01", "title": "Docs and the TZAR Hub name",
+      "items": [
+        ["added", "Quick start, a full Avatar Changer guide, executors, FAQ, privacy policy and terms."],
+        ["changed", "The site is now TZAR Hub."],
+        ["changed", "The published Avatar Changer script is leaner, with comments removed."]
+      ]
+    },
+    {
+      "project": "tzar-hub", "version": "update", "date": "2026-11-01", "title": "Avatar Changer is out", "label": "Avatar Changer",
+      "items": [
+        ["added", "Wear any player’s avatar by username or any look from the Roblox catalog."],
+        ["added", "R6 and R15, game rules, saved outfits and a custom emote wheel. Only you see it."]
+      ]
+    },
+    {
+      "project": "tzar-hub", "version": "update", "date": "2026-10-21", "title": "Meet Teto",
+      "items": [
+        ["added", "An animated Teto helps you find the guide and the community."],
+        ["changed", "The red TZAR look with the flame background."]
+      ]
+    },
+    {
+      "project": "tzar-hub", "version": "update", "date": "2026-10-18", "title": "The new TZAR site",
+      "items": [
+        ["added", "A fresh site with one loader for every supported game."]
+      ]
+    },
+    {
+      "project": "endfield-il2dump", "version": "update", "date": "2026-05-27",
+      "items": [
+        ["added", "IDA import."],
+        ["changed", "Better navigation of modules."]
+      ]
+    },
+    {
+      "project": "endfield-il2dump", "version": "first", "date": "2026-05-18", "title": "First version",
+      "items": [
+        ["added", "An offline IL2CPP metadata dumper for Unity x64 on Windows: reads GameAssembly.dll and global-metadata.dat from disk, with no injection and no admin rights."]
+      ]
+    },
+    {
+      "project": "loliland-modloader", "version": "v1.0.1", "date": "2026-05-05", "title": "First release",
+      "items": [
+        ["added", "A Windows loader for a local mod workflow."]
+      ]
+    }
+  ]
+}

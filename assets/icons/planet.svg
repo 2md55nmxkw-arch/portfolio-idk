@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 66 46">
+  <defs><clipPath id="o"><path clip-rule="evenodd" d="M-10-10h86v66h-86zM33 8.4a14.6 14.6 0 1 0 0 29.2 14.6 14.6 0 0 0 0-29.2z"/></clipPath></defs>
+  <g fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" transform="rotate(-24 33 23)">
+    <circle cx="33" cy="23" r="12.8"/>
+    <path d="M3 23A30 8.2 0 0 0 63 23"/>
+    <path d="M3 23A30 8.2 0 0 1 63 23" clip-path="url(#o)"/>
+  </g>
+</svg>

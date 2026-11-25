@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Changelog — 2MD55.ARCH</title>
+  <meta name="description" content="updates, changes, fixes and other stuff.">
+  <meta name="theme-color" content="#12100f">
+
+  <!-- Entrance animations: the animated pieces wait hidden from the first paint; js/main.js plays them
+       (the timer shows everything anyway if the script never arrives) -->
+  <script>
+    if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('reveal-ready');
+      window.revealFailsafe = setTimeout(function () { document.documentElement.classList.remove('reveal-ready'); }, 4000);
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Kalam:wght@300;400&family=Noto+Serif:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Oswald:wght@400..700&display=swap">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/shapes.css">
+  <link rel="stylesheet" href="css/ui.css">
+  <link rel="stylesheet" href="css/reveal.css">
+  <link rel="stylesheet" href="css/changelog.css">
+</head>
+<body>
+
+  <!-- shared SVG defs -->
+  <svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="g-paper-shade" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity=".14"/>
+        <stop offset=".5" stop-color="#d9a79b" stop-opacity="0"/>
+        <stop offset="1" stop-color="#c88377" stop-opacity=".32"/>
+      </linearGradient>
+      <path id="i-star" d="M0-14.4C1.2-5.6 2.9-1.7 11 0 2.9 1.7 1.2 5.6 0 14.4-1.2 5.6-2.9 1.7-11 0-2.9-1.7-1.2-5.6 0-14.4Z"/>
+      <path id="i-arrow" d="M1.5 10.5 10 2M3.2 1.6h7.2v7.2"/>
+      <!-- icons (24 x 24) -->
+      <path id="ci-home" d="M12 2.3 1.3 11.3H4.2V21.5H9.8V15H14.2V21.5H19.8V11.3H22.7ZM16.6 3.6H19.2V7.3L16.6 5.1Z"/>
+      <path id="ci-doc" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" d="M4.5 2.5H14.5L19.5 7.5V21.5H4.5ZM14.2 2.8V7.8H19.2M8 12H16M8 15.2H16M8 18.4H16"/>
+      <path id="ci-person" d="M12 2a4.8 4.8 0 1 1 0 9.6A4.8 4.8 0 0 1 12 2ZM2.8 22c0-5.4 3.7-8.7 9.2-8.7s9.2 3.3 9.2 8.7Z"/>
+      <path id="ci-folder" d="M1.8 4.8H9.3L11.5 7.4H22.2V20H1.8Z"/>
+      <path id="ci-plus" fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" d="M12 3.5V20.5M3.5 12H20.5"/>
+      <path id="ci-dash" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round" d="M4 12H20"/>
+      <path id="ci-wrench" d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.300-2.300c.5-.4.5-1.1.1-1.4z"/>
+    </defs>
+  </svg>
+
+  <div class="page cl-page">
+    <!-- Positions are in pixels of the mockup (assets/source/changelog-mockup.webp, 1536 x 1024): see css/changelog.css -->
+    <div class="cl-stage" data-reveal>
+
+      <!-- the room: wall, vines, window, the girl at the desk, the sleeping cat -->
+      <div class="cl-scene" aria-hidden="true">
+        <svg class="cl-zzz" viewBox="0 0 100 60">
+          <path d="m6 38 11-3-7 12 12-3"/><path d="m31 22 15-4-10 16 15-4"/><path d="m60 8 20-5-12 21 20-5"/>
+        </svg>
+      </div>
+
+      <!-- ============ HEADER ============ -->
+      <header class="cl-top">
+        <a class="cl-logo" href="index.html" aria-label="2MD55.ARCH — home">
+          <svg class="cl-logo__loop" viewBox="0 0 150 124" aria-hidden="true"><path id="cl-logo-loop" pathLength="1" d="M105.95 18.64L109.62 17.93L113.07 17.51L116.3 17.37L119.26 17.52L121.96 17.96L124.36 18.7L126.45 19.71L128.21 21.01L129.64 22.58L130.72 24.42L131.44 26.5L131.8 28.82L131.79 31.37L131.42 34.12L130.68 37.06L129.59 40.17L128.14 43.43L126.34 46.82L124.21 50.31L121.77 53.88L119.02 57.51L115.99 61.17L112.69 64.84L109.15 68.5L105.38 72.12L101.43 75.68L97.3 79.16L93.02 82.54L88.63 85.78L84.15 88.89L79.61 91.83L75.04 94.59L70.46 97.15L65.9 99.5L61.39 101.62L56.96 103.5L52.63 105.14L48.44 106.52L44.4 107.63L40.54 108.47L36.88 109.03L33.45 109.31L30.26 109.31L27.34 109.03L24.7 108.46L22.36 107.62L20.34 106.5L18.65 105.11L17.3 103.47L16.3 101.57L15.66 99.43L15.37 97.06L15.46 94.47L15.92 91.68L16.74 88.71L17.92 85.57L19.46 82.28L21.35 78.86L23.58 75.33L26.14 71.71L29 68.04L32.16 64.32L35.59 60.58L39.27 56.85L43.18 53.15L47.3 49.51L51.59 45.94L56.03 42.48L60.59 39.14L65.23 35.95L69.94 32.93L74.68 30.09L79.41 27.46L84.11 25.05L88.74 22.89L93.28 20.97L97.7 19.32L101.97 17.94L106.05 16.85L109.94 16.05L113.6 15.54L117 15.33L120.14 15.42L122.99 15.81L125.53 16.49L127.75 17.47L129.64 18.72L131.18 20.26L132.38 22.06L133.21 24.11L133.68 26.41L133.78 28.93L133.52 31.68L132.89 34.61L131.9 37.73L130.56 41.01"/></svg>
+          <span class="cl-logo__paper"></span>
+          <svg class="cl-logo__loop cl-logo__loop--front" viewBox="0 0 150 124" aria-hidden="true"><use href="#cl-logo-loop"/></svg>
+          <span class="cl-logo__name">2MD55.ARCH</span>
+          <svg class="cl-logo__star" viewBox="-11 -14.4 22 28.8" preserveAspectRatio="none" aria-hidden="true"><use href="#i-star"/></svg>
+        </a>
+
+        <nav class="cl-nav" aria-label="Main">
+          <ul>
+          <li><a class="cl-plaque" href="index.html" style="--shape:var(--shape-cl-nav-1)"><svg class="cl-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-home"/></svg><span>Home</span></a></li>
+          <li><a class="cl-plaque" href="index.html#projects" style="--shape:var(--shape-cl-nav-2)"><span class="icon icon--layers cl-ico" aria-hidden="true"></span><span>Projects</span></a></li>
+          <li><a class="cl-plaque" href="changelog.html" aria-current="page" style="--shape:var(--shape-cl-nav-3)"><svg class="cl-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-doc"/></svg><span>Changelog</span></a></li>
+          <li><a class="cl-plaque" href="index.html#about" style="--shape:var(--shape-cl-nav-4)"><svg class="cl-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-person"/></svg><span>About</span></a></li>
+          </ul>
+        </nav>
+        <span class="slashes cl-slashes" aria-hidden="true"></span>
+      </header>
+
+      <main>
+        <!-- ============ HEADING ============ -->
+        <div class="cl-heading">
+          <span class="cl-heading__paper" aria-hidden="true"></span>
+          <svg class="cl-heading__icon" viewBox="0 0 88 84" aria-hidden="true">
+            <path d="M14 5H58L83 28V70a9 9 0 0 1-9 9H14a9 9 0 0 1-9-9V14a9 9 0 0 1 9-9Z"/>
+            <path d="M57 6V29H82"/>
+            <path class="cl-heading__bars" d="M23 37H43M23 51H65M23 65H65"/>
+          </svg>
+          <h1 class="cl-heading__title">Changelog</h1>
+          <svg class="cl-heading__line" viewBox="0 0 606 96" aria-hidden="true">
+            <path pathLength="1" d="M150 84C200 80 280 81 353 78.5S520 77 572 72C590 70 600 64 596 54"/>
+          </svg>
+        </div>
+        <p class="cl-sub">updates, changes, fixes and other stuff...</p>
+
+        <div class="cl-stamp" aria-hidden="true">
+          <svg class="stamp" viewBox="0 0 170 124">
+            <defs>
+              <path id="cl-stamp-shape" d="M6 37L8.67 36.11L11.1 36.02L13.03 35.21L16.41 34.6L18.56 34.78L21.13 33.6L23.19 32.69L26.12 31.89L28.3 31.48L31.24 31.42L32.87 31.34L35.27 30.63L38.62 29.39L41.11 28.75L43.41 28.92L45.86 27.72L48.01 26.76L51.16 26.53L52.89 26.16L55.17 25.18L58 25L60.07 24.69L62.65 24.2L65.92 23.09L68.42 22.2L70.95 22.18L72.93 20.91L74.73 20.29L78.09 19.98L80.53 19.05L82.74 18.44L85.16 18.17L88.28 17.9L90.6 17.31L92.16 15.9L94.78 16.24L98.09 14.6L99.96 14.52L103.08 14.13L104.86 13.34L107.03 12.85L110 12L112.93 11.88L115.05 10.54L118.08 10.81L120.32 9.28L123.04 9.19L124.89 8.76L128.29 8.5L130.27 8.33L132.82 6.88L135.8 6.97L138.19 5.63L140.62 5.63L143.02 5.47L145.45 4.79L148.3 4.05L150.57 3.22L152.81 3.79L155.92 2.19L157.75 2.33L160.48 1.06L163 1L163.58 3.3L163.43 6.44L163.07 8.51L163.24 10.94L163.77 14.31L164.32 16.22L164.11 18.97L164.51 21.61L165.09 24.62L165.33 26.71L164.96 29.43L165.8 32.55L165.04 34.54L166.05 37.38L166 40L166.01 42.38L166.2 44.86L166 48.29L166.76 50.88L166.76 52.95L166.56 56L166.41 57.56L166.38 60.31L167.4 63.16L167.43 66.44L167.62 68.69L166.29 71.57L167.87 73.45L169.01 76.44L167.95 79L167.42 81.33L168 84L166.02 84.92L162.45 85.06L160.75 86.26L158.47 86.59L155.83 87.01L153.09 88.58L149.96 88.69L147.68 89.54L145.25 90.41L143.24 90.42L139.73 91.87L137.52 92.65L135.65 92.83L132.11 93.67L130.02 94.11L127.36 95.27L125.04 95.51L122.15 96.63L120 97L118.03 97.3L115.35 97.84L112.6 98.86L110.11 98.93L107.36 99.6L104.86 100.68L101.69 100.8L100.08 101.7L97.44 102.03L94.32 102.95L91.8 103.43L89.76 103.41L86.7 104.76L84.64 104.95L81.85 105.19L79.72 105.73L76.73 106.61L74.09 107.29L72.66 108.08L70.08 108.53L67.17 108.99L64.3 109.08L62 110L59.41 110.28L57.48 111.04L54.97 113.04L51.66 112.7L48.92 112.98L46.94 113.3L44.41 114.24L42.63 114.9L38.85 115.12L36.63 115.26L34.27 117.11L31.64 117.19L29.6 117.4L26.7 118.14L24.4 118.9L21.92 119.64L18.95 119.79L16.47 120.55L14.34 121.42L12 122L11.79 119.35L11.86 117.06L11.03 113.79L11.22 111.25L11.16 109.01L11.17 105.63L10.98 103.7L10.32 101.19L10.55 97.75L9.67 95.24L10.58 93.65L9.82 90.01L9.2 87.38L9.01 85.75L9.46 82.53L9 80L9.04 76.9L9.02 75.25L8.5 72.18L8.5 69.49L8.38 67.16L8.14 64.44L7.57 62.6L7.37 59.81L7.03 56.92L7.4 54.64L6.95 52.09L7.26 50.25L6.95 46.89L6.54 44.69L6.14 42.7L6.18 39.52Z"/>
+              <clipPath id="cl-stamp-clip"><use href="#cl-stamp-shape"/></clipPath>
+            </defs>
+            <g clip-path="url(#cl-stamp-clip)">
+              <image href="assets/tex/paper.webp" x="-12" y="-40" width="200" height="215"/>
+              <rect width="170" height="124" fill="#e7ae97" opacity=".7"/>
+              <rect width="170" height="124" fill="url(#g-paper-shade)"/>
+            </g>
+            <use class="stamp__rim" href="#cl-stamp-shape"/>
+            <text class="stamp__num" x="86" y="83" text-anchor="middle" transform="rotate(-11.5 86 62)">0401</text>
+            <path id="cl-stamp-ring" class="stamp__ring" pathLength="1" d="M20.59 89.93L17.51 86.5L15.07 82.8L13.32 78.87L12.26 74.74L11.91 70.45L12.27 66.05L13.36 61.58L15.15 57.08L17.63 52.6L20.79 48.19L24.59 43.88L29 39.73L33.97 35.77L39.47 32.05L45.42 28.6L51.78 25.46L58.48 22.66L65.46 20.24L72.65 18.21L79.97 16.6L87.36 15.42L94.73 14.68L102.03 14.4L109.18 14.57L116.1 15.19L122.73 16.25L129.01 17.75L134.87 19.67L140.27 21.99L145.14 24.68L149.45 27.72L153.15 31.08L156.2 34.72L158.59 38.61L160.28 42.72L161.26 47L161.53 51.41L161.07 55.91L159.89 60.46L158.01 65.01L155.43 69.53L152.19 73.97L148.31 78.28L143.82 82.44L138.77 86.39L133.2 90.11L127.16 93.56L120.71 96.7L113.9 99.51L106.81 101.95L99.49 104.01L92.01 105.66L84.45 106.89L76.88 107.69L69.37 108.04L61.99 107.94L54.81 107.39L47.92 106.39L41.37 104.95L35.23 103.09L29.57 100.82L24.43 98.17L19.88 95.14L15.97 91.79L12.72 88.13L10.18 84.2L8.38 80.04L7.33 75.69L7.04 71.19L7.52 66.59L8.77 61.93L10.77 57.25L13.51 52.61L16.95 48.04L21.07 43.59L25.82 39.31L31.16 35.24L37.02 31.41L43.37 27.86L50.12 24.63L57.22 21.75L64.6 19.24L72.19 17.14L79.91 15.45L87.68 14.2L95.45 13.39L103.12 13.04L110.63 13.15L117.91 13.72L124.88 14.74L131.5 16.21L137.68 18.11L143.38 20.43L148.53 23.14L153.1 26.22L157.04 29.65"/>
+          </svg>
+        </div>
+
+        <!-- ============ RELEASES ============
+             Generated from data/changelog.json: edit that file and run  node tools/build-changelog.mjs -->
+        <ol class="cl-timeline">
+          <!-- releases:start (generated, do not edit by hand) -->
+          <li class="cl-release" id="kimera">
+            <span class="cl-release__frame" aria-hidden="true"></span>
+            <header class="cl-release__head">
+              <span class="cl-version">v0.1.0</span>
+              <span class="cl-release__icon"><span class="icon icon--wings" aria-hidden="true"></span></span>
+              <h2 class="cl-release__name">Kimera</h2>
+              <time class="cl-release__date" datetime="2026-11-24">2026-11-24</time>
+            </header>
+            <div class="cl-release__body">
+              <p class="cl-release__title">First public version</p>
+              <ul class="cl-changes">
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> Published on GitHub Pages, with the model and the Mesmerizer dance built into the site.</span></li>
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> Eight records, each with its own dance and a stage show in time with the song.</span></li>
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> A revolving stage with three sets, stage light and real shadows.</span></li>
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> A programme page, posters, a 404 page and a closing curtain.</span></li>
+                <li class="cl-change cl-change--changed"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-dash"/></svg><span><b>Changed:</b> The pencil-sketch skin draws three times faster.</span></li>
+              </ul>
+            </div>
+          </li>
+          <li class="cl-release" id="tzar-hub">
+            <span class="cl-release__frame" aria-hidden="true"></span>
+            <header class="cl-release__head">
+              <span class="cl-version">v1.0.0</span>
+              <span class="cl-release__icon"><span class="icon icon--crown" aria-hidden="true"></span></span>
+              <h2 class="cl-release__name">Tzar-Hub</h2>
+              <time class="cl-release__date" datetime="2026-11-15">2026-11-15</time>
+            </header>
+            <div class="cl-release__body">
+              <p class="cl-release__title">Keyless and open source <span>Cmdr Panel preview</span></p>
+              <ul class="cl-changes">
+                <li class="cl-change cl-change--changed"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-dash"/></svg><span><b>Changed:</b> No more keys, checkpoints, paid plans or accounts. Every script just runs.</span></li>
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> A first look at the Cmdr Panel, still in development: a command bar on ;, key binds, panels and game modules in one place.</span></li>
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> The whole hub is readable on the new Source page, file by file.</span></li>
+                <li class="cl-change cl-change--changed"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-dash"/></svg><span><b>Changed:</b> Old key and pricing links still work and lead to the guide or the home page.</span></li>
+              </ul>
+            </div>
+          </li>
+          <li class="cl-release" id="tzar-hub-2026-11-12">
+            <span class="cl-release__frame" aria-hidden="true"></span>
+            <header class="cl-release__head">
+              <span class="cl-version">update</span>
+              <span class="cl-release__icon"><span class="icon icon--crown" aria-hidden="true"></span></span>
+              <h2 class="cl-release__name">Tzar-Hub</h2>
+              <time class="cl-release__date" datetime="2026-11-12">2026-11-12</time>
+            </header>
+            <div class="cl-release__body">
+              <p class="cl-release__title">Accessories stay on with game rules <span>Avatar Changer</span></p>
+              <ul class="cl-changes">
+                <li class="cl-change cl-change--fixed"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-wrench"/></svg><span><b>Fixed:</b> Turning on Game rules no longer drops the accessories of the look you wear.</span></li>
+              </ul>
+            </div>
+          </li>
+          <li class="cl-release" id="tzar-hub-2026-11-01">
+            <span class="cl-release__frame" aria-hidden="true"></span>
+            <header class="cl-release__head">
+              <span class="cl-version">update</span>
+              <span class="cl-release__icon"><span class="icon icon--crown" aria-hidden="true"></span></span>
+              <h2 class="cl-release__name">Tzar-Hub</h2>
+              <time class="cl-release__date" datetime="2026-11-01">2026-11-01</time>
+            </header>
+            <div class="cl-release__body">
+              <p class="cl-release__title">Docs and the TZAR Hub name</p>
+              <ul class="cl-changes">
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> Quick start, a full Avatar Changer guide, executors, FAQ, privacy policy and terms.</span></li>
+                <li class="cl-change cl-change--changed"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-dash"/></svg><span><b>Changed:</b> The site is now TZAR Hub.</span></li>
+                <li class="cl-change cl-change--changed"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-dash"/></svg><span><b>Changed:</b> The published Avatar Changer script is leaner, with comments removed.</span></li>
+              </ul>
+            </div>
+          </li>
+          <li class="cl-release" id="tzar-hub-2026-11-01-2">
+            <span class="cl-release__frame" aria-hidden="true"></span>
+            <header class="cl-release__head">
+              <span class="cl-version">update</span>
+              <span class="cl-release__icon"><span class="icon icon--crown" aria-hidden="true"></span></span>
+              <h2 class="cl-release__name">Tzar-Hub</h2>
+              <time class="cl-release__date" datetime="2026-11-01">2026-11-01</time>
+            </header>
+            <div class="cl-release__body">
+              <p class="cl-release__title">Avatar Changer is out <span>Avatar Changer</span></p>
+              <ul class="cl-changes">
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> Wear any player’s avatar by username or any look from the Roblox catalog.</span></li>
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> R6 and R15, game rules, saved outfits and a custom emote wheel. Only you see it.</span></li>
+              </ul>
+            </div>
+          </li>
+          <li class="cl-release" id="tzar-hub-2026-10-21">
+            <span class="cl-release__frame" aria-hidden="true"></span>
+            <header class="cl-release__head">
+              <span class="cl-version">update</span>
+              <span class="cl-release__icon"><span class="icon icon--crown" aria-hidden="true"></span></span>
+              <h2 class="cl-release__name">Tzar-Hub</h2>
+              <time class="cl-release__date" datetime="2026-10-21">2026-10-21</time>
+            </header>
+            <div class="cl-release__body">
+              <p class="cl-release__title">Meet Teto</p>
+              <ul class="cl-changes">
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> An animated Teto helps you find the guide and the community.</span></li>
+                <li class="cl-change cl-change--changed"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-dash"/></svg><span><b>Changed:</b> The red TZAR look with the flame background.</span></li>
+              </ul>
+            </div>
+          </li>
+          <li class="cl-release" id="tzar-hub-2026-10-18">
+            <span class="cl-release__frame" aria-hidden="true"></span>
+            <header class="cl-release__head">
+              <span class="cl-version">update</span>
+              <span class="cl-release__icon"><span class="icon icon--crown" aria-hidden="true"></span></span>
+              <h2 class="cl-release__name">Tzar-Hub</h2>
+              <time class="cl-release__date" datetime="2026-10-18">2026-10-18</time>
+            </header>
+            <div class="cl-release__body">
+              <p class="cl-release__title">The new TZAR site</p>
+              <ul class="cl-changes">
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> A fresh site with one loader for every supported game.</span></li>
+              </ul>
+            </div>
+          </li>
+          <li class="cl-release" id="endfield-il2dump">
+            <span class="cl-release__frame" aria-hidden="true"></span>
+            <header class="cl-release__head">
+              <span class="cl-version">update</span>
+              <span class="cl-release__icon"><span class="icon icon--layers" aria-hidden="true"></span></span>
+              <h2 class="cl-release__name">Endfield-IL2Dump</h2>
+              <time class="cl-release__date" datetime="2026-05-27">2026-05-27</time>
+            </header>
+            <div class="cl-release__body">
+              <ul class="cl-changes">
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> IDA import.</span></li>
+                <li class="cl-change cl-change--changed"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-dash"/></svg><span><b>Changed:</b> Better navigation of modules.</span></li>
+              </ul>
+            </div>
+          </li>
+          <li class="cl-release" id="endfield-il2dump-2026-05-18">
+            <span class="cl-release__frame" aria-hidden="true"></span>
+            <header class="cl-release__head">
+              <span class="cl-version">first</span>
+              <span class="cl-release__icon"><span class="icon icon--layers" aria-hidden="true"></span></span>
+              <h2 class="cl-release__name">Endfield-IL2Dump</h2>
+              <time class="cl-release__date" datetime="2026-05-18">2026-05-18</time>
+            </header>
+            <div class="cl-release__body">
+              <p class="cl-release__title">First version</p>
+              <ul class="cl-changes">
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> An offline IL2CPP metadata dumper for Unity x64 on Windows: reads GameAssembly.dll and global-metadata.dat from disk, with no injection and no admin rights.</span></li>
+              </ul>
+            </div>
+          </li>
+          <li class="cl-release" id="loliland-modloader">
+            <span class="cl-release__frame" aria-hidden="true"></span>
+            <header class="cl-release__head">
+              <span class="cl-version">v1.0.1</span>
+              <span class="cl-release__icon"><span class="icon icon--puzzle" aria-hidden="true"></span></span>
+              <h2 class="cl-release__name">Loliland-Modloader</h2>
+              <time class="cl-release__date" datetime="2026-05-05">2026-05-05</time>
+            </header>
+            <div class="cl-release__body">
+              <p class="cl-release__title">First release</p>
+              <ul class="cl-changes">
+                <li class="cl-change cl-change--added"><svg class="cl-change__ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-plus"/></svg><span><b>Added:</b> A Windows loader for a local mod workflow.</span></li>
+              </ul>
+            </div>
+          </li>
+          <!-- releases:end -->
+        </ol>
+      </main>
+
+      <!-- ============ SIDEBAR ============ -->
+      <aside class="cl-side" aria-label="Projects and links">
+        <span class="cl-side__frame" aria-hidden="true"></span>
+
+        <h2 class="cl-side__head"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-folder"/></svg>Projects</h2>
+        <ul class="cl-list" style="--shape:var(--shape-cl-list-1)">
+            <li><a href="https://github.com/2md55nmxkw-arch/tzar-hub" rel="noopener"><span class="cl-list__icon"><span class="icon icon--crown" aria-hidden="true"></span></span><span class="cl-list__label">Tzar-Hub</span><svg class="cl-arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <li><a href="https://github.com/2md55nmxkw-arch/kimera" rel="noopener"><span class="cl-list__icon"><span class="icon icon--wings" aria-hidden="true"></span></span><span class="cl-list__label">Kimera</span><svg class="cl-arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <li><a href="https://github.com/2md55nmxkw-arch/endfield-il2dump" rel="noopener"><span class="cl-list__icon"><span class="icon icon--layers" aria-hidden="true"></span></span><span class="cl-list__label" style="--sx:.9">Endfield-IL2Dump</span><svg class="cl-arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <li><a href="https://github.com/2md55nmxkw-arch/Loliland-ModLoader" rel="noopener"><span class="cl-list__icon"><span class="icon icon--puzzle" aria-hidden="true"></span></span><span class="cl-list__label" style="--sx:.775">Loliland-Modloader</span><svg class="cl-arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          </ul>
+
+        <h2 class="cl-side__head cl-side__head--links"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ci-folder"/></svg>Links</h2>
+        <ul class="cl-list" style="--shape:var(--shape-cl-list-2)">
+            <li><a href="https://github.com/2md55nmxkw-arch" rel="noopener"><span class="cl-list__icon"><span class="icon icon--github" aria-hidden="true"></span></span><span class="cl-list__label">GitHub</span><svg class="cl-arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <li><a href="https://hub.2md.space" rel="noopener"><span class="cl-list__icon"><span class="icon icon--planet" aria-hidden="true"></span></span><span class="cl-list__label">hub.2md.space</span><svg class="cl-arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <li><a href="https://2md55nmxkw-arch.github.io/kimera/" rel="noopener"><span class="cl-list__icon"><span class="icon icon--k" aria-hidden="true"></span></span><span class="cl-list__label">Kimera</span><svg class="cl-arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          </ul>
+      </aside>
+
+      <!-- phones only: the girl at the desk closes the page (on a wide screen she is part of the room behind) -->
+      <div class="cl-outro" aria-hidden="true">
+        <img class="cl-outro__cat" src="assets/img/changelog/cat.webp" width="230" height="140" alt="" loading="lazy" decoding="async">
+        <svg class="cl-zzz" viewBox="0 0 100 60">
+          <path d="m6 38 11-3-7 12 12-3"/><path d="m31 22 15-4-10 16 15-4"/><path d="m60 8 20-5-12 21 20-5"/>
+        </svg>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>

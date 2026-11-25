@@ -1,0 +1,122 @@
+/* =========================================================
+   2MD55.ARCH — base: tokens, reset, page texture
+   ========================================================= */
+
+:root {
+  /* palette (sampled from the mockups) */
+  --ink: #12100f;
+  --ink-soft: #1c1414;
+  --paper: #efd5c8;
+  --paper-dim: #c9afa5;
+  --red: #b72733;
+  --red-hot: #cf3340;
+
+  --font-sans: "Oswald", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-serif: "Noto Serif", Georgia, "Times New Roman", serif;
+
+  /* The mockups are 667px wide. Everything inside .page is measured in
+     "reference pixels": 1u = page width / 667, so the layout keeps the
+     proportions of the picture at any screen size. */
+  --page-max: 1200px;
+  --u: calc(100cqw / 667);
+
+  /* textures cut from the asset sheets (assets/source/sheet-3.webp) */
+  --tex-dark: url("../assets/tex/dark.webp");
+  --tex-paper: url("../assets/tex/paper.webp");
+  --tex-red: url("../assets/tex/red.webp");
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  background: var(--ink);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: var(--paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  background-color: var(--ink);
+  background-image: var(--tex-dark);
+  background-size: 228px auto;
+}
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+svg { display: block; }
+
+/* Pictures are not part of a selection: dragging the mouse over the page (or Ctrl+A) highlights
+   text only. This covers photos, art and every drawn piece (icons, stamps, pen lines). */
+img,
+svg,
+picture,
+canvas,
+video {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* <picture> only chooses a file; it and its <source>s never take part in layout */
+picture { display: contents; }
+source { display: none; }
+.svg-defs { position: absolute; }
+
+:focus-visible {
+  outline: 2px dashed var(--paper);
+  outline-offset: 4px;
+}
+
+/* line breaks that exist only in the mobile layout */
+.only-mobile { display: none; }
+
+@media (max-width: 820px) {
+  .only-mobile { display: inline; }
+}
+
+/* text for screen readers only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* the page column: everything inside can use var(--u) */
+.page {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

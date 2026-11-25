@@ -1,0 +1,334 @@
+/* =========================================================
+   NAVBAR
+   Numbers are reference pixels (see --u in base.css).
+   Desktop mockup: one 44u row. Mobile mockup: logo row + links row.
+   ========================================================= */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  height: calc(var(--u) * 44);
+  padding-inline: calc(var(--u) * 12.5) calc(var(--u) * 12);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Once the page scrolls under the bar (js/main.js adds .is-stuck) it gets a backing:
+   the page colour, fading out below the torn hairline. At the very top there is none,
+   so the first screen looks exactly like the mockup. */
+.nav::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 calc(var(--u) * -13) 0;
+  z-index: -1;
+  background: var(--ink) var(--tex-dark) 0 0 / 228px auto;
+  -webkit-mask: linear-gradient(#000 calc(100% - var(--u) * 15), transparent);
+  mask: linear-gradient(#000 calc(100% - var(--u) * 15), transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.nav.is-stuck::before { opacity: 0.97; }
+
+/* jumping to a section from the menu: stop a little below the bar */
+main > section { scroll-margin-top: calc(var(--u) * 50); }
+#home { scroll-margin-top: 100vh; } /* "Home" goes all the way to the top */
+
+/* ---------- logo ---------- */
+.nav__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.575em;
+  font-size: calc(var(--u) * 18.8);
+  letter-spacing: 0.03em;
+  color: var(--paper);
+}
+
+.nav__star {
+  flex: none;
+  width: 1.165em;
+  height: 1.53em;
+  color: var(--red);
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.nav__logo:hover .nav__star { transform: rotate(90deg) scale(1.08); }
+
+/* ---------- links ---------- */
+.nav__links {
+  --tag-x: 1.12em;      /* how far the torn tag sticks out past the text */
+  --tag-top: 0.36em;
+  --tag-bottom: 0.13em;
+
+  justify-self: center;
+  display: flex;
+  gap: calc(var(--u) * 28 - 1em);
+  font-size: calc(var(--u) * 12.35);
+  letter-spacing: 0.02em;
+  translate: calc(var(--u) * 5.8) calc(var(--u) * -0.3);
+}
+
+.nav__links a {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  padding: 0.7em 0.5em;
+  color: var(--paper);
+}
+
+/* red torn tag behind the active / hovered link */
+.nav__links a::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: var(--tag-top);
+  bottom: var(--tag-bottom);
+  left: calc(0.5em - var(--tag-x));
+  right: calc(0.5em - var(--tag-x));
+  background:
+    linear-gradient(100deg, rgb(255 255 255 / 0.07), transparent 45%, rgb(0 0 0 / 0.16)),
+    var(--tex-red) center / calc(var(--u) * 110) auto;
+  -webkit-mask: var(--shape-tag) center / 100% 100% no-repeat;
+  mask: var(--shape-tag) center / 100% 100% no-repeat;
+  opacity: 0;
+  transform: scale(0.9) rotate(-3deg);
+  transition: opacity 0.18s ease, transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.nav__links a:hover::before,
+.nav__links a:focus-visible::before {
+  opacity: 0.6;
+  transform: none;
+}
+
+.nav__links a[aria-current]::before {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- slashes + 0401 stamp ---------- */
+.nav__stamp {
+  display: flex;
+  align-items: center;
+}
+
+.nav__slashes {
+  width: calc(var(--u) * 36);
+  height: calc(var(--u) * 24);
+  margin-right: calc(var(--u) * -6);
+  translate: 0 calc(var(--u) * 0.6);
+  color: #be2c38;
+}
+
+.nav__stamp .stamp {
+  width: calc(var(--u) * 70);
+  height: calc(var(--u) * 35);
+  translate: 0 calc(var(--u) * -2.2);
+}
+
+/* ---------- torn hairline under the bar ---------- */
+.nav__edge {
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--u) * -8);
+  width: 100%;
+  height: calc(var(--u) * 8);
+  color: var(--paper-dim);
+  pointer-events: none;
+}
+
+/* ---------- burger + dropdown: mobile only ---------- */
+.nav__burger,
+.nav__menu { display: none; }
+
+/* =========================================================
+   MOBILE (second mockup)
+   ========================================================= */
+@media (max-width: 820px) {
+  /* on a phone only the row of links stays; the logo row scrolls away */
+  .nav {
+    top: calc(max(46px, var(--u) * 49.4) * -1);
+    grid-template-columns: 1fr auto;
+    grid-template-rows:
+      max(46px, calc(var(--u) * 49.4))
+      max(40px, calc(var(--u) * 41.6));
+    height: auto;
+    padding-inline: calc(var(--u) * 22.5) calc(var(--u) * 23);
+  }
+
+  .nav__logo {
+    justify-self: start;
+    gap: 0.53em;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-stretch: 62.5%;
+    font-size: max(21px, calc(var(--u) * 34));
+    letter-spacing: 0;
+  }
+
+  .nav__star {
+    width: 1em;
+    height: 1.25em;
+  }
+
+  main > section { scroll-margin-top: max(46px, calc(var(--u) * 48)); }
+
+  .nav__stamp { display: none; }
+
+  /* burger */
+  .nav__burger {
+    --bar: max(2px, calc(var(--u) * 2.4));
+    --gap: max(6px, calc(var(--u) * 8));
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    width: max(26px, calc(var(--u) * 33.3));
+    color: var(--paper);
+  }
+
+  /* bigger tap target than the drawn lines */
+  .nav__burger::after {
+    content: "";
+    position: absolute;
+    inset: -12px;
+  }
+
+  .nav__burger span {
+    display: block;
+    height: var(--bar);
+    border-radius: 1px;
+    background: currentColor;
+    transition: transform 0.25s ease, opacity 0.15s ease;
+  }
+
+  .nav__burger[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(calc(var(--gap) + var(--bar))) rotate(45deg);
+  }
+  .nav__burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .nav__burger[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(calc((var(--gap) + var(--bar)) * -1)) rotate(-45deg);
+  }
+
+  /* links row */
+  .nav__links {
+    --tag-x: 1.3em;
+    --tag-top: 0.33em;
+    --tag-bottom: -0.03em;
+
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    justify-content: space-between;
+    gap: 0;
+    padding-inline: calc(var(--u) * 79.2 - 0.5em) calc(var(--u) * 70 - 0.5em);
+    font-size: max(13px, calc(var(--u) * 17.7));
+    letter-spacing: 0.04em;
+    translate: none;
+  }
+
+  /* the tag is a little narrower around the other words, so it does not touch its neighbours */
+  .nav__links a:not(:first-child) { --tag-x: 0.95em; }
+
+  /* the mockup spaces the middle links a little unevenly */
+  .nav__links a:nth-child(3) { translate: calc(var(--u) * -7.3) 0; }
+  .nav__links a:nth-child(4) { translate: calc(var(--u) * -5.5) 0; }
+
+  .nav__edge { bottom: calc(var(--u) * -6.5); }
+
+  /* menu: torn paper panel (sheet-1, "MOBILE MENU (OPEN)"); sizes in em of the link text */
+  .nav__menu {
+    position: absolute;
+    top: calc(100% + max(8px, var(--u) * 10));
+    right: calc(var(--u) * 16);
+    z-index: 5;
+    display: grid;
+    width: 12.3em;
+    padding: 1.35em 1.9em 1.65em 1.67em;
+    font-size: max(17px, calc(var(--u) * 20));
+    letter-spacing: 0.03em;
+    color: var(--ink-soft);
+    filter: drop-shadow(0 6px 14px rgb(0 0 0 / 0.6));
+    animation: nav-menu-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .nav__menu[hidden] { display: none; }
+
+  /* the paper itself (on a pseudo-element so the mask does not clip the red tag) */
+  .nav__menu::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(160deg, rgb(255 255 255 / 0.1), transparent 50%, rgb(150 80 70 / 0.16)),
+      var(--tex-paper) center / cover;
+    -webkit-mask: var(--shape-panel) center / 100% 100% no-repeat;
+    mask: var(--shape-panel) center / 100% 100% no-repeat;
+  }
+
+  .nav__menu a {
+    display: flex;
+    align-items: center;
+    height: 2.5em;
+    padding-left: 1.53em;
+  }
+
+  /* hairlines between Projects / Lab / Notes / About */
+  .nav__menu a:nth-of-type(n + 3) { border-top: 1px solid rgb(28 20 20 / 0.6); }
+
+  .nav__menu span {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .nav__menu a[aria-current] span { color: var(--paper); }
+
+  .nav__menu a[aria-current] span::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -0.34em -1.73em -0.58em -1.92em;
+    background:
+      linear-gradient(100deg, rgb(255 255 255 / 0.07), transparent 45%, rgb(0 0 0 / 0.16)),
+      var(--tex-red) center / 6em auto;
+    -webkit-mask: var(--shape-tag) center / 100% 100% no-repeat;
+    mask: var(--shape-tag) center / 100% 100% no-repeat;
+  }
+
+  .nav__close {
+    position: absolute;
+    top: 0.83em;
+    right: 0.73em;
+    width: 1em;
+    height: 1em;
+  }
+
+  /* bigger tap target than the drawn cross */
+  .nav__close::after {
+    content: "";
+    position: absolute;
+    inset: -10px;
+  }
+
+  .nav__close svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: var(--ink-soft);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+}
+
+@keyframes nav-menu-in {
+  from { opacity: 0; transform: translateY(-6px) rotate(-1deg); }
+}

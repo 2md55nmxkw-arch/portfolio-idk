@@ -1,0 +1,216 @@
+/* =========================================================
+   UI pieces shared between sections:
+   icons, paper-strip buttons, the "0401" stamp
+   ========================================================= */
+
+/* ---------- icons (masks cut from the asset sheet, tinted with currentColor) ---------- */
+.icon {
+  flex: none;
+  display: block;
+  background: currentColor;
+  -webkit-mask: var(--i) center / contain no-repeat;
+  mask: var(--i) center / contain no-repeat;
+}
+
+.icon--crown  { --i: url("../assets/icons/crown.png");  width: 1.86em; aspect-ratio: 365 / 265; }
+.icon--wings  { --i: url("../assets/icons/wings.png");  width: 2.19em; aspect-ratio: 405 / 296; }
+.icon--layers { --i: url("../assets/icons/layers.png"); width: 1.75em; aspect-ratio: 348 / 303; }
+.icon--puzzle { --i: url("../assets/icons/puzzle.png"); width: 1.54em; aspect-ratio: 317 / 299; }
+.icon--github { --i: url("../assets/icons/github.png"); width: 1.69em; aspect-ratio: 306 / 291; }
+.icon--planet { --i: url("../assets/icons/planet.svg"); width: 2.23em; aspect-ratio: 66 / 46; }
+.icon--k      { --i: url("../assets/icons/k.png");      width: 1.35em; aspect-ratio: 271 / 250; }
+
+/* ---------- strip: a torn strip of paper used as a button ----------
+   Everything is sized in em, so one font-size scales the whole button.
+   --w      width in reference pixels
+   --shape  which torn outline to use
+   --rule   minimum length of the pen line under the label              */
+.strip {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  width: calc(var(--u) * var(--w));
+  color: var(--ink-soft);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: var(--ls, 0.03em);
+  text-transform: uppercase;
+  white-space: nowrap;
+  filter: drop-shadow(0 0.14em 0.2em rgb(0 0 0 / 0.55));
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.strip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(172deg, rgb(255 255 255 / 0.06), transparent 55%, rgb(150 80 70 / 0.14)),
+    var(--tex-paper) var(--tex-pos, 30% 40%) / calc(var(--u) * 118) auto;
+  -webkit-mask: var(--shape, var(--shape-strip-1)) center / 100% 100% no-repeat;
+  mask: var(--shape, var(--shape-strip-1)) center / 100% 100% no-repeat;
+}
+
+.strip__label { position: relative; }
+
+/* pen line under the label */
+.strip__label::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.3em);
+  width: max(100%, var(--rule, 0em));
+  height: max(1px, 0.1em);
+  border-radius: 1px;
+  background: currentColor;
+  opacity: 0.85;
+  rotate: -0.35deg;
+}
+
+.strip__arrow {
+  flex: none;
+  width: 1.12em;
+  height: 1.12em;
+  margin-left: auto;
+  fill: none;
+  stroke: #c12c39;
+  stroke-width: 1.75;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.strip:hover,
+.strip:focus-visible { transform: translate(-0.12em, -0.1em) rotate(-0.7deg); }
+
+.strip:hover .strip__arrow,
+.strip:focus-visible .strip__arrow { transform: translate(0.14em, -0.14em); }
+
+/* ---------- "0401" stamp: scrap of paper, serif numerals, red pen ring ---------- */
+.stamp { overflow: visible; }
+
+.stamp__rim {
+  fill: none;
+  stroke: #fff6ee;
+  stroke-width: 0.35;
+  opacity: 0.5;
+}
+
+.stamp__num {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 650;
+  font-stretch: 78%;
+  font-size: 19.5px;
+  fill: var(--ink-soft);
+}
+
+.stamp__ring {
+  fill: none;
+  stroke: #d24a55;
+  stroke-width: 0.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stamp--lg .stamp__num {
+  font-size: 34px;
+  font-stretch: 72%;
+}
+
+.stamp--lg .stamp__ring { stroke-width: 0.8; }
+.stamp--lg .stamp__rim { stroke-width: 0.5; }
+
+/* ---------- section tag: heading on a strip of masking tape ---------- */
+.tag {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  height: 1.23em;
+  margin: 0;
+  padding: 0 0.72em 0.03em;
+  font-family: var(--font-serif);
+  font-size: calc(var(--u) * 30);
+  font-weight: 900;
+  font-stretch: 62.5%;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink-soft);
+  filter: drop-shadow(0 0.07em 0.1em rgb(0 0 0 / 0.5));
+}
+
+/* the lettering in the mockup is taller than any condensed serif we can load */
+.tag > span {
+  display: block;
+  transform: scaleY(1.2);
+}
+
+.tag::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgb(95 70 62 / 0.3), rgb(120 80 70 / 0.07) 13%, rgb(120 80 70 / 0.07) 87%, rgb(95 70 62 / 0.3)),
+    var(--tex-paper) 40% 20% / calc(var(--u) * 150) auto;
+  -webkit-mask: var(--shape, var(--shape-strip-2)) center / 100% 100% no-repeat;
+  mask: var(--shape, var(--shape-strip-2)) center / 100% 100% no-repeat;
+}
+
+/* ---------- red pen scribble under a few words ---------- */
+.scribble { position: relative; }
+
+.scribble svg {
+  position: absolute;
+  left: -0.25em;
+  top: 86%;
+  width: calc(100% + 0.5em);
+  height: 0.55em;
+  overflow: visible;
+  fill: none;
+  stroke: var(--red-hot);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+/* ---------- sheet: a torn sheet of paper filling its parent (give it a --shape) ---------- */
+.sheet {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 calc(var(--u) * 1.2) calc(var(--u) * 2) rgb(0 0 0 / 0.45));
+}
+
+.sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(165deg, rgb(236 204 188 / 0.5), rgb(230 196 180 / 0.55)),
+    var(--tex-paper) 10% 25% / calc(var(--u) * 190) auto;
+  -webkit-mask: var(--shape) center / 100% 100% no-repeat;
+  mask: var(--shape) center / 100% 100% no-repeat;
+}
+
+/* a second, slightly darker sheet lying underneath */
+.sheet--back::before {
+  background:
+    linear-gradient(rgb(222 187 171 / 0.6), rgb(222 187 171 / 0.6)),
+    var(--tex-paper) 80% 60% / calc(var(--u) * 190) auto;
+}
+
+/* ---------- slashes: a row of red slashes, each split in two (set --n, --p and a height) ---------- */
+.slashes {
+  --n: 3;                       /* how many */
+  --p: calc(var(--u) * 8);      /* distance from one slash to the next */
+  width: calc(var(--p) * (var(--n) - 0.57));
+  background: repeating-linear-gradient(90deg, #be2c38 0 calc(var(--p) * 0.43), transparent 0 var(--p));
+  -webkit-mask: linear-gradient(#000 0 45%, transparent 0 54%, #000 0);
+  mask: linear-gradient(#000 0 45%, transparent 0 54%, #000 0);
+  transform: skewX(-32deg);
+}

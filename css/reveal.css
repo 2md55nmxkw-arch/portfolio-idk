@@ -1,0 +1,134 @@
+/* =========================================================
+   REVEAL: sections come alive as they scroll into view
+   js/main.js adds .reveal-ready to <html> (only when scripts run and the
+   visitor has not asked for reduced motion) and .is-in to a section once
+   it is on screen. Every animated piece gets an animation that waits,
+   paused, in its starting pose and plays when its section is .is-in.
+
+   The keyframes only say where a piece comes FROM; it always ends in the
+   pose the layout gives it, so nothing here can move the final design.
+   They use translate / rotate / scale (not transform), so hover effects
+   and the rotations set elsewhere keep working.
+   ========================================================= */
+
+.reveal-ready {
+  --out: cubic-bezier(0.2, 0.8, 0.2, 1);     /* settle softly */
+  --back: cubic-bezier(0.3, 1.45, 0.5, 1);   /* overshoot a little, then settle */
+  --slam: cubic-bezier(0.6, 0, 0.9, 0.45);   /* speed up into the page */
+  --pen: cubic-bezier(0.35, 0.1, 0.45, 1);   /* a hand writing */
+}
+
+.reveal-ready .is-in { --play: running; }
+
+/* ---------- where things come from ---------- */
+@keyframes rv-fade  { from { opacity: 0; } }
+@keyframes rv-rise  { from { opacity: 0; translate: 0 calc(var(--u) * 12); } }
+@keyframes rv-left  { from { opacity: 0; translate: calc(var(--u) * -22) 0; } }
+@keyframes rv-right { from { opacity: 0; translate: calc(var(--u) * 26) 0; } }
+/* a sheet of paper or a photo dropped onto the page */
+@keyframes rv-drop  { from { opacity: 0; translate: 0 calc(var(--u) * -18); rotate: var(--tilt, -3deg); } }
+/* a bit of tape or a tag pressed on */
+@keyframes rv-tape  { from { opacity: 0; scale: 1.3; } }
+/* a rubber stamp */
+@keyframes rv-stamp { from { opacity: 0; scale: 1.9; rotate: 9deg; } 60% { opacity: 1; } }
+/* a star spinning in */
+@keyframes rv-pop   { from { opacity: 0; scale: 0.2; rotate: -90deg; } }
+/* handwriting appearing from left to right (the clip leaves room for tails and underlines) */
+@keyframes rv-write {
+  from { clip-path: inset(-25% 100% -35% -6%); }
+  to   { clip-path: inset(-25% -6% -35% -6%); }
+}
+/* a pen line being drawn (the path has pathLength="1") */
+@keyframes rv-draw {
+  from { stroke-dasharray: 1 1.1; stroke-dashoffset: 1; }
+  to   { stroke-dasharray: 1 1.1; stroke-dashoffset: 0; }
+}
+
+/* ---------- order inside lists: --i = 0, 1, 2 ... ---------- */
+.reveal-ready :is(li, .hero__wires path, .hero__wires rect):nth-child(1) { --i: 0; }
+.reveal-ready :is(li, .hero__wires path, .hero__wires rect):nth-child(2) { --i: 1; }
+.reveal-ready :is(li, .hero__wires path, .hero__wires rect):nth-child(3) { --i: 2; }
+.reveal-ready :is(li, .hero__wires path, .hero__wires rect):nth-child(4) { --i: 3; }
+.reveal-ready li:nth-child(5) { --i: 4; }
+
+/* Each line below reads: what, how long, easing, when (seconds after the section appears). */
+
+/* ---------- hero (starts as the loading screen lifts) ---------- */
+.reveal-ready .hero__title               { --tilt: -4deg; animation: rv-drop 0.7s var(--out) 0.3s backwards var(--play, paused); }
+.reveal-ready .hero__tape                { animation: rv-tape 0.3s var(--back) 0.8s backwards var(--play, paused); }
+.reveal-ready .hero__title-star          { animation: rv-pop 0.5s var(--back) 0.9s backwards var(--play, paused); }
+.reveal-ready .hero__loop :is(path, use) { animation: rv-draw 0.9s var(--pen) 0.85s backwards var(--play, paused); }
+.reveal-ready .hero__tagline             { animation: rv-write 0.9s var(--pen) 0.65s backwards var(--play, paused); }
+.reveal-ready .hero__underline path      { animation: rv-draw 0.45s var(--pen) 1.5s backwards var(--play, paused); }
+.reveal-ready .hero__spines li           { animation: rv-fade 0.5s ease calc(0.8s + var(--i) * 0.08s) backwards var(--play, paused); }
+.reveal-ready .hero__wires rect          { animation: rv-fade 0.3s ease calc(0.8s + var(--i) * 0.1s) backwards var(--play, paused); }
+.reveal-ready .hero__wires path          { animation: rv-draw 0.55s var(--pen) calc(0.9s + var(--i) * 0.1s) backwards var(--play, paused); }
+.reveal-ready .hero__projects li         { animation: rv-right 0.55s var(--out) calc(1.15s + var(--i) * 0.1s) backwards var(--play, paused); }
+.reveal-ready .hero__links               { animation: rv-rise 0.6s var(--out) 1.2s backwards var(--play, paused); }
+.reveal-ready .hero__stamp               { animation: rv-stamp 0.24s var(--slam) 1.6s backwards var(--play, paused); }
+.reveal-ready .hero__stamp .stamp__ring  { animation: rv-draw 0.7s var(--pen) 1.85s backwards var(--play, paused); }
+.reveal-ready .hero__stamp-star          { animation: rv-pop 0.4s var(--back) 2s backwards var(--play, paused); }
+
+/* ---------- about ---------- */
+.reveal-ready .about__strokes            { animation: rv-left 0.7s var(--out) 0s backwards var(--play, paused); }
+.reveal-ready .about__art                { animation: rv-right 0.8s var(--out) 0.1s backwards var(--play, paused); }
+.reveal-ready .about__sheet--back        { --tilt: 3deg; animation: rv-drop 0.6s var(--out) 0.05s backwards var(--play, paused); }
+.reveal-ready .about__sheet--front       { animation: rv-drop 0.6s var(--out) 0.18s backwards var(--play, paused); }
+.reveal-ready .about__tag                { animation: rv-tape 0.35s var(--back) 0.5s backwards var(--play, paused); }
+.reveal-ready .about__tape               { animation: rv-tape 0.3s var(--back) 0.62s backwards var(--play, paused); }
+.reveal-ready .about__text               { animation: rv-write 1.1s var(--pen) 0.7s backwards var(--play, paused); }
+.reveal-ready .about__cat                { animation: rv-rise 0.5s var(--back) 0.9s backwards var(--play, paused); }
+
+/* ---------- projects ---------- */
+.reveal-ready .projects__film            { animation: rv-fade 0.8s ease 0s backwards var(--play, paused); }
+.reveal-ready .projects__sheet--back     { --tilt: 2.5deg; animation: rv-drop 0.6s var(--out) 0.05s backwards var(--play, paused); }
+.reveal-ready .projects__sheet--front    { --tilt: -2deg; animation: rv-drop 0.6s var(--out) 0.18s backwards var(--play, paused); }
+.reveal-ready .projects__tag             { animation: rv-tape 0.35s var(--back) 0.45s backwards var(--play, paused); }
+.reveal-ready .projects__tape            { animation: rv-tape 0.3s var(--back) 0.6s backwards var(--play, paused); }
+.reveal-ready .projects__star            { animation: rv-pop 0.5s var(--back) 0.7s backwards var(--play, paused); }
+.reveal-ready .projects__marks           { animation: rv-fade 0.8s ease 0.7s backwards var(--play, paused); }
+.reveal-ready .project                   { animation: rv-rise 0.5s var(--out) calc(0.5s + var(--i) * 0.12s) backwards var(--play, paused); }
+.reveal-ready .project__thumb            { animation: rv-right 0.6s var(--out) calc(0.65s + var(--i) * 0.12s) backwards var(--play, paused); }
+
+/* ---------- lab ---------- */
+.reveal-ready .lab__art                  { animation: rv-fade 1s ease 0s backwards var(--play, paused); }
+.reveal-ready .lab__tag                  { animation: rv-tape 0.35s var(--back) 0.15s backwards var(--play, paused); }
+.reveal-ready .lab__slashes              { animation: rv-left 0.4s var(--out) 0.4s backwards var(--play, paused); }
+.reveal-ready .lab__text                 { animation: rv-write 1s var(--pen) 0.45s backwards var(--play, paused); }
+.reveal-ready .lab__note                 { --tilt: 6deg; animation: rv-drop 0.6s var(--out) 0.35s backwards var(--play, paused); }
+/* the ticks are made one by one */
+.reveal-ready .checklist__box use:nth-of-type(2) { animation: rv-draw 0.3s var(--pen) calc(1s + var(--i) * 0.25s) backwards var(--play, paused); }
+
+/* ---------- gallery ---------- */
+/* the photos are pinned first, the clutter behind them fades in afterwards:
+   the decor picture keeps a thin rim under each photo, which would look like empty frames */
+.reveal-ready .gallery__decor            { animation: rv-fade 0.9s ease 0.65s backwards var(--play, paused); }
+.reveal-ready .gallery__tag              { animation: rv-tape 0.35s var(--back) 0.1s backwards var(--play, paused); }
+.reveal-ready .gallery__camera           { animation: rv-tape 0.3s var(--back) 0.35s backwards var(--play, paused); }
+.reveal-ready .gallery__text             { animation: rv-write 0.9s var(--pen) 0.4s backwards var(--play, paused); }
+.reveal-ready .shot                      { --tilt: 6deg; animation: rv-drop 0.6s var(--back) calc(0.15s + var(--i) * 0.1s) backwards var(--play, paused); }
+.reveal-ready .shot:nth-child(even)      { --tilt: -5deg; }
+.reveal-ready .gallery__more             { animation: rv-tape 0.3s var(--back) 0.95s backwards var(--play, paused); }
+
+/* ---------- notes ---------- */
+.reveal-ready .notes__decor              { animation: rv-fade 0.9s ease 0s backwards var(--play, paused); }
+.reveal-ready .notes__tag                { animation: rv-tape 0.35s var(--back) 0.1s backwards var(--play, paused); }
+.reveal-ready .notes__text               { animation: rv-write 0.9s var(--pen) 0.35s backwards var(--play, paused); }
+.reveal-ready .notes__sheet              { --tilt: 2.5deg; animation: rv-drop 0.6s var(--out) 0.15s backwards var(--play, paused); }
+.reveal-ready .notes__list li            { animation: rv-rise 0.45s var(--out) calc(0.5s + var(--i) * 0.1s) backwards var(--play, paused); }
+.reveal-ready .notes__more               { animation: rv-fade 0.4s ease 0.9s backwards var(--play, paused); }
+.reveal-ready .notes__more .scribble path { animation: rv-draw 0.4s var(--pen) 1.2s backwards var(--play, paused); }
+
+/* ---------- footer ---------- */
+.reveal-ready .footer__art               { animation: rv-fade 1.1s ease 0s backwards var(--play, paused); }
+.reveal-ready .footer__logo              { animation: rv-rise 0.6s var(--out) 0.3s backwards var(--play, paused); }
+.reveal-ready .footer__star              { animation: rv-pop 0.5s var(--back) 0.6s backwards var(--play, paused); }
+.reveal-ready .footer__links li          { animation: rv-right 0.5s var(--out) calc(0.5s + var(--i) * 0.1s) backwards var(--play, paused); }
+.reveal-ready .footer__slashes           { animation: rv-left 0.4s var(--out) 0.9s backwards var(--play, paused); }
+.reveal-ready .footer__stamp             { animation: rv-fade 0.3s ease 1s backwards var(--play, paused); }
+.reveal-ready .footer__stamp use         { animation: rv-draw 0.7s var(--pen) 1.2s backwards var(--play, paused); }
+
+/* on paper nothing waits for a scroll */
+@media print {
+  .reveal-ready * { animation: none !important; }
+}

@@ -1,0 +1,118 @@
+/* =========================================================
+   LIGHTBOX
+   A gallery photo held up close. It is a <dialog>, so the browser gives
+   us the hard parts: it sits above everything, keeps the keyboard focus
+   inside, and closes on Esc. js/main.js fills it in.
+   ========================================================= */
+
+.lightbox {
+  /* the dialog lives outside .page, so it gets its own "reference pixel" for the shared pieces */
+  --u: calc(min(100vw, 1200px) / 667);
+
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 56px 16px 26px;
+  border: 0;
+  background: none;
+  color: var(--paper);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.lightbox[open] {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  justify-items: center;
+  align-items: center;
+  gap: 18px;
+}
+
+.lightbox::backdrop {
+  background: rgb(12 10 10 / 0.92);
+  animation: lb-fade 0.25s ease;
+}
+
+/* While it is open the page behind does not scroll. Hiding the scrollbar would make the page
+   jump sideways, so the script measures the bar and we keep that much room (--scrollbar). */
+.has-lightbox {
+  overflow: hidden;
+  padding-right: var(--scrollbar, 0px);
+}
+
+/* ---------- the photo ---------- */
+.lightbox__figure {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+/* As large as the window allows, but no more than one and a half times the file: the photos are small.
+   --ar (width / height) is set by the script. */
+.lightbox__img {
+  display: block;
+  width: min(92vw, 100vh * var(--ar, 1.2) - 190px * var(--ar, 1.2), 1.5px * var(--w, 600));
+  width: min(92vw, 100dvh * var(--ar, 1.2) - 190px * var(--ar, 1.2), 1.5px * var(--w, 600));
+  height: auto;
+  filter: drop-shadow(0 16px 28px rgb(0 0 0 / 0.7));
+  -webkit-user-drag: none;
+  user-select: none;
+  cursor: grab;
+}
+
+.lightbox__img.is-in { animation: lb-open 0.42s cubic-bezier(0.3, 1.45, 0.5, 1) backwards; }
+.lightbox[data-dir="next"] .lightbox__img.is-in { animation-name: lb-next; }
+.lightbox[data-dir="prev"] .lightbox__img.is-in { animation-name: lb-prev; }
+
+@keyframes lb-fade { from { opacity: 0; } }
+@keyframes lb-open { from { opacity: 0; translate: 0 -26px; rotate: -5deg; scale: 0.92; } }
+@keyframes lb-next { from { opacity: 0; translate: 70px 0; rotate: 4deg; } }
+@keyframes lb-prev { from { opacity: 0; translate: -70px 0; rotate: -4deg; } }
+
+/* ---------- controls: scraps of paper ---------- */
+.lightbox__btn {
+  width: 46px;
+  height: 46px;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.lightbox__btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lightbox__btn--close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+}
+
+.lightbox__btn--close svg { stroke: #b72733; }
+
+.lightbox__bar {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.lightbox__count {
+  min-width: 3.4em;
+  font-family: "Kalam", "Segoe Print", "Comic Sans MS", cursive;
+  font-size: 20px;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  color: rgb(239 213 200 / 0.9);
+}

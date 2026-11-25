@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 — page not found · 2MD55.ARCH</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#12100f">
+
+  <!-- This page can be served for any missing address, at any depth, so every path here starts from the site root. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400&family=Noto+Serif:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Oswald:wght@400..700&display=swap">
+
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/shapes.css">
+  <link rel="stylesheet" href="/css/404.css">
+</head>
+<body>
+
+  <main class="e404">
+    <h1 class="sr-only">404 — page not found</h1>
+
+    <!-- The whole page is one picture (assets/img/404.webp, 1536 x 1024).
+         The links below are invisible areas laid over the logo and the two buttons drawn in it. -->
+    <div class="e404__art">
+      <img src="/assets/img/404.webp" width="1536" height="1024" decoding="async"
+           alt="404, page not found: looks like this page doesn’t exist, was moved, or never existed at all. The girl is slumped over her desk, a little cube robot lies broken beside her, and the cat looks puzzled."
+           onerror="document.documentElement.classList.add('no-art')">
+      <a class="e404__spot e404__spot--logo" href="/"><span class="sr-only">2MD55.ARCH — home</span></a>
+      <a class="e404__spot e404__spot--home" href="/"><span class="sr-only">Home</span></a>
+      <a class="e404__spot e404__spot--projects" href="/#projects"><span class="sr-only">Projects</span></a>
+    </div>
+
+    <!-- shown only if the picture cannot be loaded -->
+    <div class="e404__plain">
+      <p class="e404__code">404</p>
+      <p class="e404__text">page not found...<br>looks like this page doesn’t exist,<br>was moved, or never existed at all.</p>
+      <p class="e404__links"><a href="/">Home</a><a href="/#projects">Projects</a></p>
+    </div>
+  </main>
+
+</body>
+</html>

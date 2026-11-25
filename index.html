@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2MD55.ARCH</title>
+  <meta name="description" content="taking games and runtimes apart, seeing how they work, and building my own tools from it.">
+  <meta name="theme-color" content="#12100f">
+
+  <!-- Loading screen: shown only when scripts run; js/loader.js takes it down (the timer is a safety net) -->
+  <script>
+    document.documentElement.classList.add('is-loading');
+    window.loaderFailsafe = setTimeout(function () {
+      document.documentElement.classList.remove('is-loading');
+      document.dispatchEvent(new Event('loaderdone'));
+    }, 15000);
+  </script>
+  <link rel="preload" as="image" href="assets/img/loader.webp" fetchpriority="high">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400&family=Noto+Serif:ital,wdth,wght@0,62.5..100,100..900;1,62.5..100,100..900&family=Oswald:wght@400..700&display=swap">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/shapes.css">
+  <link rel="stylesheet" href="css/ui.css">
+  <link rel="stylesheet" href="css/loader.css">
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/hero.css">
+  <link rel="stylesheet" href="css/about.css">
+  <link rel="stylesheet" href="css/projects.css">
+  <link rel="stylesheet" href="css/lab.css">
+  <link rel="stylesheet" href="css/gallery.css">
+  <link rel="stylesheet" href="css/notes.css">
+  <link rel="stylesheet" href="css/footer.css">
+  <link rel="stylesheet" href="css/lightbox.css">
+  <link rel="stylesheet" href="css/reveal.css">
+</head>
+<body>
+
+  <!-- ============ LOADING SCREEN ============
+       Positions are in pixels of the reference picture (assets/source/loader.webp, 508 x 336). -->
+  <div class="loader">
+    <div class="loader__stage">
+      <img class="loader__art" src="assets/img/loader.webp" width="1118" height="739" alt="" fetchpriority="high" decoding="async">
+
+      <span class="loader__glow"></span>
+      <span class="loader__blink"><i></i><i></i></span>
+      <svg class="loader__z" viewBox="0 0 13 16" aria-hidden="true"><use href="#lg-z"/></svg>
+      <svg class="loader__z" viewBox="0 0 13 16" aria-hidden="true"><use href="#lg-z"/></svg>
+      <svg class="loader__z" viewBox="0 0 13 16" aria-hidden="true"><use href="#lg-z"/></svg>
+
+      <!-- "LOADING..." drawn as strokes, so it looks the same before any font arrives -->
+      <svg class="loader__label" viewBox="200 106 110 16" aria-hidden="true">
+        <path d="M202.85 108.65V119.65H207.35M226.35 119.65 229.75 108.65 233.15 119.65M227.6 115.9H231.9M239.85 108.65V119.65H241.6C247.4 119.65 247.4 108.65 241.6 108.65ZM252.85 108.65H255.35M254.1 108.65V119.65M252.85 119.65H255.35M262.85 119.65V108.65L269.15 119.65V108.65M281.9 111A3.25 5.5 0 1 0 282.35 114.9H279.5"/>
+        <ellipse cx="217.1" cy="114.15" rx="3.25" ry="5.5"/>
+        <circle class="loader__dot" cx="289.35" cy="119.4" r="1.12"/>
+        <circle class="loader__dot" cx="296.9" cy="119.4" r="1.12"/>
+        <circle class="loader__dot" cx="305.1" cy="119.4" r="1.12"/>
+      </svg>
+
+      <div class="loader__bar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span class="loader__fill"></span>
+        <svg class="loader__frame" viewBox="0 0 181 21.4" aria-hidden="true"><path id="loader-frame" d="M4.05 1.23L13.13 1.49L22.21 1.23L31.25 1.49L40.38 1.37L49.61 1.5L58.64 1.42L67.8 1.41L76.93 1.38L85.98 1.42L95.1 1.2L104.18 1.48L113.18 1.15L122.33 1.49L131.4 1.6L140.49 1.34L149.62 1.28L158.78 1.26L167.9 1.27L176.99 1.45L177.99 1.6L178.84 2.16L179.4 3.01L179.57 4.21L179.67 10.64L179.65 17.39L179.4 18.39L178.84 19.24L177.99 19.8L176.92 20.19L167.91 19.86L158.8 19.85L149.67 20.11L140.65 19.9L131.42 19.86L122.31 20.11L113.21 20.03L104.09 20.14L95.02 19.83L85.97 19.84L76.83 19.95L67.7 20.16L58.59 20.18L49.58 20.03L40.49 19.89L31.37 20.1L22.2 20.14L13.1 20.09L3.98 20.24L3.01 19.8L2.16 19.24L1.6 18.39L1.37 17.21L1.36 10.86L1.38 3.76L1.6 3.01L2.16 2.16L3.01 1.6Z"/></svg>
+      </div>
+
+      <!-- percentage: digits are drawn as strokes too; js/loader.js arranges them -->
+      <svg class="loader__pct" viewBox="-1 -1 62 18" aria-hidden="true">
+        <defs>
+          <ellipse id="lg-0" cx="3.85" cy="7.7" rx="3.85" ry="7.7"/>
+          <path id="lg-1" d="M1.32 3.29 4.4 0V15.4"/>
+          <path id="lg-2" d="M0.44 4.52C0.44 -1.44 7.33 -1.44 7.33 4.31 7.33 8.21 2.93 10.68 0.29 15.4H7.63"/>
+          <path id="lg-3" d="M0.66 2.98C1.91 -1.03 7.19 -0.62 7.19 4 7.19 6.78 5.28 7.49 3.37 7.49 5.57 7.49 7.55 8.52 7.55 11.19 7.55 16.43 1.47 16.84 0.29 12.32"/>
+          <path id="lg-4" d="M5.87 15.4V0L0.22 10.88H7.77"/>
+          <path id="lg-5" d="M7.04 0H1.76L1.03 6.98C2.64 5.13 7.55 5.13 7.55 10.27 7.55 16.63 1.61 16.63 0.37 12.53"/>
+          <path id="lg-6" d="M6.6 0.92C3.23 -1.03 0.29 3.7 0.29 10.06 0.29 17.04 7.48 17.04 7.48 10.47 7.48 4.72 0.88 4.72 0.37 9.86"/>
+          <path id="lg-7" d="M0.29 0H7.48L2.93 15.4"/>
+          <g id="lg-8"><ellipse cx="3.85" cy="3.85" rx="2.95" ry="3.85"/><ellipse cx="3.85" cy="11.5" rx="3.6" ry="3.9"/></g>
+          <g id="lg-9"><use href="#lg-6" transform="rotate(180 3.85 7.7)"/></g>
+          <g id="lg-pct"><circle cx="2.75" cy="3.3" r="2.75"/><circle cx="10.15" cy="12.1" r="2.75"/><path d="M10.6 0 2.3 15.4"/></g>
+          <path id="lg-z" d="M1.4 1.9C5 1.3 8.5 1.5 11.8 1L1.2 14.5C5 15.3 9 14.6 12.4 14.8"/>
+        </defs>
+        <use href="#lg-0"/><use/><use/><use href="#lg-pct" x="12"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- shared SVG defs -->
+  <svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- soft light-to-pink shading laid over paper scraps -->
+      <linearGradient id="g-paper-shade" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity=".14"/>
+        <stop offset=".5" stop-color="#d9a79b" stop-opacity="0"/>
+        <stop offset="1" stop-color="#c88377" stop-opacity=".32"/>
+      </linearGradient>
+      <!-- four-point star -->
+      <path id="i-star" d="M0-14.4C1.2-5.6 2.9-1.7 11 0 2.9 1.7 1.2 5.6 0 14.4-1.2 5.6-2.9 1.7-11 0-2.9-1.7-1.2-5.6 0-14.4Z"/>
+      <!-- three red slashes -->
+      <path id="i-slashes" fill="currentColor" stroke="currentColor" stroke-width=".45" stroke-linejoin="round" d="M15.57 0.9L19.07 0.9L12.95 10.6L9.45 10.6ZM8.32 12.4L11.82 12.4L5.30 22.75L1.80 22.75ZM23.67 0.9L27.17 0.9L21.05 10.6L17.55 10.6ZM16.42 12.4L19.92 12.4L13.40 22.75L9.90 22.75ZM31.77 0.9L35.27 0.9L29.15 10.6L25.65 10.6ZM24.52 12.4L28.02 12.4L21.50 22.75L18.00 22.75Z"/>
+      <!-- hand-drawn checkbox and tick (12 x 12) -->
+      <path id="i-box" d="M.7 1 11.5.5 11.2 11.4.9 11.6Z"/>
+      <path id="i-tick" pathLength="1" d="M2.7 5.9 5.5 9.5 14.8-3.8"/>
+      <!-- sheet of paper with a folded corner (14 x 17) -->
+      <path id="i-doc" d="M1.2 1h7.3l4.3 4.3V16H1.2ZM8.3 1.2v4.3h4.3M3.8 8.2h3.4M3.8 10.7h6.4M3.8 13.2h6.4"/>
+      <!-- "opens elsewhere" arrow -->
+      <path id="i-arrow" d="M1.5 10.5 10 2M3.2 1.6h7.2v7.2"/>
+    </defs>
+  </svg>
+
+  <div class="page">
+
+    <!-- ============ NAVBAR ============ -->
+    <header class="nav" id="top">
+      <a class="nav__logo" href="#top" aria-label="2MD55.ARCH — home">
+        <svg class="nav__star" viewBox="-11 -14.4 22 28.8" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="currentColor" d="M0-14.4C1.2-5.6 2.9-1.7 11 0 2.9 1.7 1.2 5.6 0 14.4-1.2 5.6-2.9 1.7-11 0-2.9-1.7-1.2-5.6 0-14.4Z"/>
+        </svg>
+        <span class="nav__name">2MD55.ARCH</span>
+      </a>
+
+      <button class="nav__burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="nav__links" aria-label="Main">
+        <a href="#home" aria-current="page">Home</a>
+        <a href="#projects">Projects</a>
+        <a href="#lab">Lab</a>
+        <a href="#notes">Notes</a>
+        <a href="#about">About</a>
+      </nav>
+
+      <div class="nav__stamp" aria-hidden="true">
+        <svg class="nav__slashes" viewBox="0 0 36 24"><use href="#i-slashes"/></svg>
+        <svg class="stamp" viewBox="0 0 70 35">
+          <defs>
+            <path id="stamp-shape" d="M13.36 6.93L14.21 6.22L15.14 5.5L16.6 5.34L18.52 5.1L19.99 4.89L21.45 5.18L22.66 4.77L24.43 4.57L25.5 5L26.68 4.5L28.63 3.83L30.35 3.12L31.57 2.43L33.14 2.29L33.71 3.86L35.18 3.52L36.47 3.39L37.94 3.21L39.5 3.13L41.14 2.97L42.36 2.47L43.71 2.43L44.79 2.05L46.52 1.98L48 1.57L49.44 1.43L50.92 0.96L53 0.86L53.42 1.73L54.07 2.86L55.43 3.13L57.46 3.25L58.71 3.14L59.96 3.03L61.81 2.85L62.85 2.53L64.62 2.32L65.61 2.33L66.96 2.16L68.71 1.93L68.41 3.16L68.14 4.47L67.64 5.86L67.19 7.38L67.11 8.5L66.57 9.79L65.56 10.71L64.43 12.64L64.39 14.06L64.28 15.5L64.07 16.57L63.56 17.79L63.07 19.4L62.4 20.22L61.93 21.57L61.28 23.42L60.86 24.79L59.57 26.21L59.25 28.02L59.18 29.27L58.71 30.86L57.28 30.75L55.55 31.02L53.81 31.43L52.29 31.57L50.97 31.81L49.52 32.3L48 32.43L46.31 32.17L44.86 32.32L43.85 32.3L42.44 32.14L40.86 32.14L39.37 32.5L37.86 32.52L36.49 32.54L35.32 32.85L33.51 32.84L32.29 33.14L30.7 33.03L29.07 33.18L27.49 33.2L25.87 32.98L24.64 32.86L23.4 32.92L21.57 33L20.26 32.92L18.38 33.22L16.87 33.33L15.13 33.56L13.51 33.49L12.29 33.71L10.91 33.55L9.69 33.43L7.79 33.19L6.57 33.14L4.83 33.47L3.51 33.52L1.57 33.71L2.2 32.52L2.69 30.77L3.36 29.43L4.4 28.17L5.18 27.08L5.86 26.21L6.36 24.74L7.32 23L8 21.57L8.04 20.46L9.06 19.18L9.79 18L9.43 16.93L9.75 15.62L10.61 14.62L11.57 13.36L12.25 12.04L12.88 10.59L13.36 9.43L13.21 8.31Z"/>
+            <clipPath id="stamp-clip"><use href="#stamp-shape"/></clipPath>
+          </defs>
+          <g clip-path="url(#stamp-clip)">
+            <image href="assets/tex/paper.webp" x="-16" y="-44" width="108" height="116"/>
+            <rect width="70" height="35" fill="url(#g-paper-shade)"/>
+          </g>
+          <use class="stamp__rim" href="#stamp-shape"/>
+          <text class="stamp__num" x="35.5" y="24.7" text-anchor="middle" transform="rotate(-11.5 35.5 17.8)">0401</text>
+          <path id="stamp-ring" class="stamp__ring" pathLength="1" d="M15.96 27.41L14.61 26.7L13.45 25.88L12.5 24.97L11.78 23.98L11.28 22.91L11.01 21.78L10.99 20.6L11.2 19.37L11.65 18.11L12.33 16.84L13.25 15.57L14.38 14.3L15.72 13.05L17.26 11.84L18.98 10.67L20.86 9.56L22.89 8.53L25.05 7.57L27.31 6.7L29.66 5.93L32.06 5.27L34.5 4.72L36.95 4.29L39.39 3.98L41.79 3.8L44.14 3.75L46.4 3.82L48.56 4.02L50.59 4.34L52.48 4.79L54.21 5.35L55.76 6.02L57.11 6.79L58.27 7.67L59.2 8.63L59.91 9.66L60.39 10.77L60.63 11.93L60.63 13.15L60.4 14.39L59.93 15.67L59.22 16.95L58.29 18.24L57.13 19.51L55.77 20.76L54.21 21.97L52.47 23.14L50.56 24.25L48.51 25.29L46.32 26.26L44.02 27.13L41.63 27.92L39.18 28.59L36.68 29.16L34.16 29.62L31.65 29.95L29.16 30.15L26.73 30.24L24.38 30.19L22.13 30.01L20 29.71L18.02 29.29L16.2 28.74L14.57 28.08L13.13 27.31L11.91 26.44L10.93 25.48L10.17 24.43L9.67 23.3L9.42 22.11L9.42 20.87L9.68 19.59L10.19 18.29L10.94 16.97L11.94 15.64L13.17 14.33L14.62 13.04L16.27 11.79L18.1 10.59L20.11 9.44L22.26 8.37L24.55 7.38L26.94 6.48L29.41 5.68L31.95 4.98L34.52 4.4L37.1 3.94L39.66 3.6L42.19 3.39L44.66 3.31L47.04 3.36L49.31 3.54L51.46 3.85L53.46 4.28L55.29 4.84L56.93 5.51"/>
+        </svg>
+      </div>
+
+      <!-- mobile menu (opened by the burger): torn paper panel -->
+      <div class="nav__menu" id="nav-menu" hidden>
+        <button class="nav__close" type="button" aria-label="Close menu">
+          <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 1.5l9 9M10.5 1.5l-9 9"/></svg>
+        </button>
+        <a href="#home" aria-current="page"><span>Home</span></a>
+        <a href="#projects"><span>Projects</span></a>
+        <a href="#lab"><span>Lab</span></a>
+        <a href="#notes"><span>Notes</span></a>
+        <a href="#about"><span>About</span></a>
+      </div>
+
+      <!-- torn hairline under the bar -->
+      <svg class="nav__edge" viewBox="0 0 667 8" preserveAspectRatio="none" aria-hidden="true">
+        <path fill="currentColor" d="M7 4.48L10.42 4.3L13.83 4.21L17.25 4.09L20.66 3.93L24.08 3.88L27.49 3.83L30.91 3.98L34.33 3.77L37.74 3.85L41.16 3.63L44.57 3.49L47.99 3.26L51.41 3.32L54.82 3.1L58.24 2.8L61.65 2.65L65.07 2.64L68.48 2.64L71.9 2.71L75.32 2.69L78.73 2.68L82.15 2.59L85.56 2.64L88.98 2.89L92.39 2.61L95.81 2.55L99.23 2.39L102.64 2.22L106.06 2.12L109.47 2.14L112.89 2.08L116.31 1.99L119.72 1.97L123.14 2.14L126.55 2.01L129.97 2.31L133.38 2.26L136.8 2.29L140.22 2.14L143.63 2.3L147.05 2.3L150.46 2.43L153.88 2.45L157.29 2.59L160.71 2.81L164.13 2.85L167.54 3.14L170.96 3.83L174.37 3.94L177.79 4.11L181.21 4.25L184.62 4.43L188.04 4.3L191.45 4.32L194.87 4.51L198.28 4.44L201.7 4.51L205.12 4.36L208.53 4.14L211.95 4.15L215.36 3.93L218.78 3.96L222.19 3.71L225.61 3.6L229.03 3.35L232.44 3.15L235.86 2.82L239.27 2.59L242.69 2.41L246.11 2.22L249.52 2.33L252.94 2.43L256.35 2.51L259.77 2.34L263.18 2.44L266.6 2.43L270.02 2.4L273.43 2.32L276.85 2.43L280.26 2.32L283.68 2.49L287.09 2.38L290.51 2.4L293.93 2.38L297.34 2.54L300.76 2.51L304.17 2.5L307.59 2.63L311.01 2.69L314.42 2.81L317.84 2.98L321.25 3.03L324.67 3.21L328.08 3.09L331.5 3.03L334.92 3.02L338.33 3.1L341.75 3.2L345.16 3.23L348.58 4.14L351.99 4.36L355.41 4.31L358.83 4.07L362.24 4.07L365.66 4.06L369.07 4.17L372.49 4.2L375.91 4.14L379.32 4.18L382.74 4.29L386.15 4.15L389.57 4.07L392.98 4.25L396.4 4.09L399.82 3.95L403.23 3.92L406.65 3.73L410.06 3.47L413.48 3.58L416.89 3.48L420.31 3.47L423.73 3.41L427.14 3.35L430.56 3.34L433.97 3.35L437.39 3.34L440.81 3.25L444.22 3.38L447.64 3.65L451.05 3.68L454.47 3.69L457.88 3.77L461.3 3.63L464.72 3.5L468.13 3.54L471.55 3.73L474.96 3.57L478.38 3.75L481.79 3.81L485.21 3.82L488.63 3.99L492.04 4.11L495.46 4.29L498.87 4.21L502.29 4.31L505.71 4.35L509.12 4.04L512.54 3.81L515.95 3.92L519.37 4L522.78 3.91L526.2 3.77L529.62 3.75L533.03 3.67L536.45 3.87L539.86 3.86L543.28 3.88L546.69 3.91L550.11 3.97L553.53 4.09L556.94 3.95L560.36 4.16L563.77 4.19L567.19 4.16L570.61 4.39L574.02 4.63L577.44 4.8L580.85 5L584.27 4.92L587.68 5.07L591.1 5.29L594.52 5.32L597.93 5.25L601.35 5.15L604.76 5.38L608.18 5.38L611.59 5.43L615.01 5.58L618.43 5.47L621.84 5.72L625.26 5.53L628.67 5.58L632.09 5.58L635.51 5.6L638.92 5.51L642.34 5.62L645.75 5.84L649.17 5.8L652.58 6.08L656 6.27L656 6.16L652.58 6.37L649.17 6.77L645.75 7.03L642.34 7.26L638.92 7.43L635.51 7.28L632.09 7.44L628.67 7.48L625.26 7.55L621.84 7.6L618.43 7.58L615.01 7.47L611.59 7.6L608.18 7.5L604.76 7.56L601.35 7.44L597.93 7.43L594.52 7.27L591.1 6.98L587.68 7.07L584.27 7.04L580.85 6.69L577.44 6.41L574.02 6.47L570.61 6.5L567.19 6.15L563.77 5.95L560.36 5.96L556.94 5.85L553.53 5.84L550.11 5.79L546.69 5.77L543.28 5.74L539.86 5.73L536.45 5.92L533.03 5.86L529.62 5.9L526.2 5.94L522.78 6.04L519.37 6.09L515.95 6.11L512.54 6L509.12 6.35L505.71 6.13L502.29 6.01L498.87 6.16L495.46 5.98L492.04 5.79L488.63 5.75L485.21 5.81L481.79 5.63L478.38 5.6L474.96 5.5L471.55 5.32L468.13 5.48L464.72 5.52L461.3 5.41L457.88 5.33L454.47 5.47L451.05 5.37L447.64 5.46L444.22 5.3L440.81 5.33L437.39 5.33L433.97 5.16L430.56 5.24L427.14 5.09L423.73 5.01L420.31 4.99L416.89 5.26L413.48 5.39L410.06 5.38L406.65 5.38L403.23 5.62L399.82 5.45L396.4 5.54L392.98 5.49L389.57 5.52L386.15 5.41L382.74 5.66L379.32 5.92L375.91 5.81L372.49 5.77L369.07 5.84L365.66 5.65L362.24 5.76L358.83 5.57L355.41 5.58L351.99 5.57L348.58 5.57L345.16 4.71L341.75 4.53L338.33 4.47L334.92 4.29L331.5 4.35L328.08 4.21L324.67 4.11L321.25 4.19L317.84 4.32L314.42 4.24L311.01 4.36L307.59 4.3L304.17 4.14L300.76 4.28L297.34 4.21L293.93 4.09L290.51 3.87L287.09 3.81L283.68 3.89L280.26 3.96L276.85 3.84L273.43 3.91L270.02 4.01L266.6 3.83L263.18 3.75L259.77 3.99L256.35 3.71L252.94 3.8L249.52 3.75L246.11 3.8L242.69 4L239.27 4.11L235.86 4.28L232.44 4.33L229.03 4.65L225.61 4.84L222.19 4.88L218.78 5.02L215.36 4.98L211.95 5.26L208.53 5.4L205.12 5L201.7 4.91L198.28 5.06L194.87 5.14L191.45 5.1L188.04 5.09L184.62 5.13L181.21 5.14L177.79 5.08L174.37 5.15L170.96 4.88L167.54 4.03L164.13 3.82L160.71 3.65L157.29 3.55L153.88 3.41L150.46 3.18L147.05 3.24L143.63 3.22L140.22 3.26L136.8 3.2L133.38 2.92L129.97 3.06L126.55 3.12L123.14 2.96L119.72 2.99L116.31 3L112.89 3.02L109.47 3.03L106.06 2.95L102.64 2.96L99.23 3.12L95.81 3.17L92.39 3.18L88.98 3.36L85.56 3.24L82.15 3.18L78.73 3.51L75.32 3.47L71.9 3.69L68.48 3.77L65.07 3.62L61.65 3.73L58.24 3.75L54.82 3.68L51.41 3.87L47.99 4.28L44.57 4.35L41.16 4.51L37.74 4.62L34.33 4.89L30.91 4.9L27.49 4.93L24.08 5.11L20.66 5.07L17.25 4.98L13.83 4.89L10.42 4.79L7 4.45Z"/>
+      </svg>
+    </header>
+
+    <main>
+
+      <!-- ============ HERO ============ -->
+      <section class="hero" id="home" aria-labelledby="hero-name">
+        <div class="hero__art">
+          <img src="assets/img/hero.webp" width="1536" height="1024" fetchpriority="high" decoding="async"
+               alt="A red-haired girl in a hoodie daydreams at a cluttered desk at night. Beside her floats a game world taken apart into layers; a red moon hangs in the window.">
+        </div>
+
+        <!-- labels on the book spines -->
+        <ul class="hero__spines" aria-hidden="true">
+          <li>Reverse</li>
+          <li>Modding</li>
+          <li>Scripts</li>
+          <li>Metadata</li>
+        </ul>
+
+        <!-- title on a torn strip of paper -->
+        <div class="hero__title">
+          <svg class="hero__loop" viewBox="0 0 150 124" aria-hidden="true"><path id="hero-loop" pathLength="1" d="M105.95 18.64L109.62 17.93L113.07 17.51L116.3 17.37L119.26 17.52L121.96 17.96L124.36 18.7L126.45 19.71L128.21 21.01L129.64 22.58L130.72 24.42L131.44 26.5L131.8 28.82L131.79 31.37L131.42 34.12L130.68 37.06L129.59 40.17L128.14 43.43L126.34 46.82L124.21 50.31L121.77 53.88L119.02 57.51L115.99 61.17L112.69 64.84L109.15 68.5L105.38 72.12L101.43 75.68L97.3 79.16L93.02 82.54L88.63 85.78L84.15 88.89L79.61 91.83L75.04 94.59L70.46 97.15L65.9 99.5L61.39 101.62L56.96 103.5L52.63 105.14L48.44 106.52L44.4 107.63L40.54 108.47L36.88 109.03L33.45 109.31L30.26 109.31L27.34 109.03L24.7 108.46L22.36 107.62L20.34 106.5L18.65 105.11L17.3 103.47L16.3 101.57L15.66 99.43L15.37 97.06L15.46 94.47L15.92 91.68L16.74 88.71L17.92 85.57L19.46 82.28L21.35 78.86L23.58 75.33L26.14 71.71L29 68.04L32.16 64.32L35.59 60.58L39.27 56.85L43.18 53.15L47.3 49.51L51.59 45.94L56.03 42.48L60.59 39.14L65.23 35.95L69.94 32.93L74.68 30.09L79.41 27.46L84.11 25.05L88.74 22.89L93.28 20.97L97.7 19.32L101.97 17.94L106.05 16.85L109.94 16.05L113.6 15.54L117 15.33L120.14 15.42L122.99 15.81L125.53 16.49L127.75 17.47L129.64 18.72L131.18 20.26L132.38 22.06L133.21 24.11L133.68 26.41L133.78 28.93L133.52 31.68L132.89 34.61L131.9 37.73L130.56 41.01"/></svg>
+          <span class="hero__title-paper"></span>
+          <span class="hero__tape"></span>
+          <svg class="hero__loop hero__loop--front" viewBox="0 0 150 124" aria-hidden="true"><use href="#hero-loop"/></svg>
+          <h1 class="hero__name" id="hero-name">2MD55.ARCH</h1>
+          <svg class="hero__title-star" viewBox="-11 -14.4 22 28.8" preserveAspectRatio="none" aria-hidden="true"><use href="#i-star"/></svg>
+        </div>
+
+        <p class="hero__tagline">
+          taking games and runtimes apart,<br>
+          seeing how they work,<br>
+          and building my own tools from it.
+          <svg class="hero__underline" viewBox="0 0 140 8" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M1 6.4C22 5.6 39 5.3 58 4.3S104 2.9 139 1.3"/></svg>
+        </p>
+
+        <!-- red wires from the layers of the cube to the project buttons (desktop) -->
+        <svg class="hero__wires" viewBox="0 0 667 444.67" aria-hidden="true">
+          <path pathLength="1" d="M451.6 145.5H465L478.6 125H487"/>
+          <path pathLength="1" d="M444.7 184.6H462L474.5 165.7H483"/>
+          <path pathLength="1" d="M442.9 226.9H455L468.5 206.5H477"/>
+          <path pathLength="1" d="M428.2 271.4H444L459.8 247.5H469"/>
+          <g>
+            <rect x="449.1" y="143" width="5" height="5"/>
+            <rect x="442.2" y="182.1" width="5" height="5"/>
+            <rect x="440.4" y="224.4" width="5" height="5"/>
+            <rect x="425.7" y="268.9" width="5" height="5"/>
+          </g>
+        </svg>
+
+        <ul class="hero__projects">
+          <li><a class="strip strip--project" href="changelog.html#tzar-hub" style="--w:169.4;--shape:var(--shape-strip-1);--rule:5.8em;--ls:.06em">
+            <span class="strip__icon"><span class="icon icon--crown"></span></span><span class="strip__label">Tzar-Hub</span><svg class="strip__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li><a class="strip strip--project" href="changelog.html#kimera" style="--w:169.4;--shape:var(--shape-strip-2);--rule:5.8em;--ls:.07em">
+            <span class="strip__icon"><span class="icon icon--wings"></span></span><span class="strip__label">Kimera</span><svg class="strip__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li><a class="strip strip--project" href="changelog.html#endfield-il2dump" style="--w:178;--shape:var(--shape-strip-3);--ls:.012em">
+            <span class="strip__icon"><span class="icon icon--layers"></span></span><span class="strip__label">Endfield-IL2Dump</span><svg class="strip__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li><a class="strip strip--project" href="changelog.html#loliland-modloader" style="--w:187;--shape:var(--shape-strip-4);--ls:-.012em">
+            <span class="strip__icon"><span class="icon icon--puzzle"></span></span><span class="strip__label">Loliland-Modloader</span><svg class="strip__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        </ul>
+
+        <div class="hero__stamp" aria-hidden="true">
+          <svg class="stamp stamp--lg" viewBox="0 0 92 82">
+            <defs>
+              <path id="stamp-lg-shape" d="M8.3 19.3L10.02 19.2L11.46 18.57L13.12 18.54L14.32 18.56L16.13 17.81L17.48 18.14L19.37 17.75L20.35 17.65L22.04 16.98L24.22 17.15L25.2 16.67L26.71 16.43L28.76 16.32L30 16L31 14.2L32.64 14.17L33.94 13.91L35.71 13.77L37.08 13.69L38.96 13.41L40.43 13.2L42.64 12.42L44.08 12.42L45.13 12.14L47.11 12L48.38 12.12L50.16 11.78L52.23 11.54L53.72 11.33L55 11.16L56.6 11.1L58.04 10.65L60 10.5L61.63 10L63.45 9.98L64.82 9.68L66.56 9.78L67.64 9.43L69.63 9.23L70.55 9.42L72.46 9.2L74.03 8.57L75.64 8.47L76.87 8.32L78.75 8.22L79.84 8.19L81.35 7.72L83.3 7.7L83.4 9.15L83.49 10.95L84.14 12.21L84.22 13.61L84.57 15.49L84.64 17.19L84.45 18.96L84.7 20.13L84.73 21.74L85.44 23.43L85.5 25L85.12 26.65L85.02 28.16L85.13 29.71L84.66 31.07L84.62 32.69L84.49 34.28L84.22 35.77L84.21 37.27L83.98 38.58L83.93 40.19L83.5 42L83.58 43.26L83.88 44.88L84.12 46.67L83.81 48.53L84.25 49.73L84.21 51.92L84.32 53.29L84.41 54.43L84.73 56.33L84.86 58.27L84.81 59.69L85.21 61.42L85 62.7L83.46 62.92L82.06 63.09L80.63 63.77L78.63 63.76L76.97 64.02L76.16 64.4L74.26 64.46L72.85 65.01L70.87 65.27L69.74 65L67.8 65.25L66.69 65.5L65.4 65.88L63.14 66.11L62 66.5L61.08 67.43L60.5 68.5L58.84 68.84L57.28 69.08L55.82 69.3L54.28 69.55L52.59 69.91L50.8 70.15L49.41 70.47L47.47 70.76L46.09 70.62L44.62 70.78L43.28 71.7L41.13 71.59L40.12 71.5L38.11 71.98L36.82 72.34L35 72.5L33.52 72.63L32.03 73.07L29.99 73.05L28.62 73.17L27.27 73.45L26.05 74.03L23.73 74.15L22.23 74.45L20.86 74.62L19.52 74.93L17.67 74.75L16.23 75.12L14.79 75.16L12.79 75.82L11.94 75.97L10 76L9.82 73.97L9.48 72.75L9.01 70.75L9.31 69.34L9.43 67.59L8.81 65.93L8.23 64.76L8.2 63.08L8.18 61.48L7.88 59.33L7.5 58L7.89 56.6L7.74 54.36L8.11 53.2L7.78 51.39L8.46 50.17L8.78 48.41L9.07 46.17L9.58 44.66L9.61 43.25L10.03 41.91L10 40L9.71 38.6L9.45 36.74L9.74 35.19L9.42 33.56L9.46 31.85L9.39 30.22L9.12 29.03L8.77 26.91L8.78 25.45L8.62 23.91L8.52 22.35L8.49 20.96Z"/>
+              <clipPath id="stamp-lg-clip"><use href="#stamp-lg-shape"/></clipPath>
+            </defs>
+            <g clip-path="url(#stamp-lg-clip)">
+              <image href="assets/tex/paper.webp" x="-8" y="-20" width="108" height="116"/>
+              <rect width="92" height="82" fill="url(#g-paper-shade)"/>
+            </g>
+            <use class="stamp__rim" href="#stamp-lg-shape"/>
+            <text class="stamp__num" x="47" y="50" text-anchor="middle" transform="rotate(-9.5 47 38.5)">0401</text>
+            <path id="stamp-lg-ring" class="stamp__ring" pathLength="1" d="M8.27 52.11L6.54 50.22L5.18 48.18L4.2 46.01L3.6 43.73L3.41 41.36L3.62 38.92L4.23 36.45L5.24 33.95L6.64 31.47L8.41 29.02L10.55 26.63L13.03 24.32L15.82 22.12L18.91 20.04L22.26 18.12L25.84 16.37L29.6 14.8L33.53 13.45L37.57 12.31L41.69 11.4L45.84 10.73L49.99 10.3L54.09 10.13L58.11 10.21L62 10.54L65.73 11.12L69.27 11.94L72.56 12.99L75.6 14.26L78.34 15.74L80.76 17.42L82.84 19.28L84.56 21.29L85.9 23.45L86.85 25.72L87.4 28.09L87.54 30.54L87.28 33.04L86.62 35.57L85.55 38.1L84.1 40.62L82.27 43.09L80.08 45.49L77.54 47.81L74.69 50.02L71.55 52.1L68.14 54.03L64.5 55.79L60.66 57.36L56.66 58.74L52.53 59.9L48.31 60.83L44.05 61.53L39.77 61.99L35.53 62.2L31.37 62.16L27.32 61.87L23.43 61.33L19.74 60.54L16.27 59.52L13.07 58.27L10.18 56.8L7.61 55.13L5.4 53.27L3.57 51.23L2.14 49.05L1.12 46.74L0.53 44.32L0.37 41.82L0.65 39.25L1.36 36.65L2.5 34.04L4.05 31.45L6 28.9L8.33 26.41L11.02 24.01L14.04 21.73L17.36 19.58L20.95 17.59L24.77 15.78L28.79 14.16L32.97 12.74L37.26 11.55L41.63 10.59L46.03 9.88L50.43 9.41L54.77 9.2L59.02 9.25L63.14 9.55L67.09 10.11L70.84 10.91L74.34 11.96L77.56 13.24L80.48 14.75L83.07 16.46L85.3 18.36"/>
+          </svg>
+          <svg class="hero__stamp-star" viewBox="-11 -14.4 22 28.8" preserveAspectRatio="none"><use href="#i-star"/></svg>
+        </div>
+
+        <ul class="hero__links">
+          <li><a class="strip strip--link" href="https://github.com/2md55nmxkw-arch" rel="noopener" style="--w:115.2;--wm:176;--shape:var(--shape-strip-2)">
+            <span class="icon icon--github"></span><span class="strip__label">GitHub</span><svg class="strip__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li><a class="strip strip--link" href="https://hub.2md.space" rel="noopener" style="--w:161;--wm:233.7;--shape:var(--shape-strip-4);--ls:-.012em">
+            <span class="icon icon--planet"></span><span class="strip__label">hub.2md.space</span><svg class="strip__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li><a class="strip strip--link" href="https://2md55nmxkw-arch.github.io/kimera/" rel="noopener" style="--w:127;--wm:183;--shape:var(--shape-strip-1)">
+            <span class="icon icon--k"></span><span class="strip__label">Kimera</span><svg class="strip__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+        </ul>
+      </section>
+
+      <!-- ============ ABOUT ============ -->
+      <section class="about" id="about" aria-labelledby="about-title">
+        <img class="about__strokes" src="assets/img/about-strokes.webp" width="566" height="604" alt="" loading="lazy" decoding="async">
+        <picture>
+          <source media="(max-width: 820px)" srcset="assets/img/about-m.webp" width="1039" height="670">
+          <img class="about__art" src="assets/img/about.webp" width="1099" height="676" loading="lazy" decoding="async"
+               alt="The same girl in profile, eyes closed, listening to music on headphones under a crescent moon.">
+        </picture>
+
+        <div class="about__paper" aria-hidden="true">
+          <span class="sheet sheet--back about__sheet--back"></span>
+          <span class="sheet about__sheet--front"></span>
+          <span class="about__tape"></span>
+        </div>
+
+        <h2 class="tag about__tag" id="about-title"><span>About</span></h2>
+
+        <div class="about__text">
+          <p>i take video games and runtimes apart<br>
+             to see how they work, then build my own<br>
+             tools from what i learn.</p>
+          <p>script hubs, metadata dumpers,<br>
+             mod loaders, and one strange browser art piece.</p>
+        </div>
+
+        <img class="about__cat" src="assets/img/cat.webp" width="313" height="389" alt="" loading="lazy" decoding="async">
+      </section>
+
+      <!-- ============ PROJECTS ============ -->
+      <section class="projects" id="projects" aria-labelledby="projects-title">
+        <span class="projects__film" aria-hidden="true"></span>
+        <picture>
+          <source media="(max-width: 820px)" srcset="assets/img/projects-marks-m.webp" width="140" height="135">
+          <img class="projects__marks" src="assets/img/projects-marks.webp" width="282" height="1174" alt="" loading="lazy" decoding="async">
+        </picture>
+
+        <div class="projects__paper" aria-hidden="true">
+          <span class="sheet sheet--back projects__sheet--back"></span>
+          <span class="projects__tape"></span>
+          <span class="sheet projects__sheet--front"></span>
+        </div>
+
+        <h2 class="tag projects__tag" id="projects-title"><span>Projects</span></h2>
+        <svg class="projects__star" viewBox="-11 -14.4 22 28.8" preserveAspectRatio="none" aria-hidden="true"><use href="#i-star"/></svg>
+
+        <!-- each row opens the project's repository; descriptions follow github.com/2md55nmxkw-arch -->
+        <ul class="projects__list">
+          <li class="project" style="--x:371;--y:63;--w:229;--xm:349;--ym:56;--wm:233">
+            <a class="project__link" href="https://github.com/2md55nmxkw-arch/tzar-hub" rel="noopener">
+              <span class="project__icon"><span class="icon icon--crown"></span></span>
+              <span class="project__body">
+                <h3 class="project__name">Tzar-Hub<svg class="project__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></h3>
+                <span class="project__desc">a keyless Roblox script hub.</span>
+              </span>
+              <picture>
+                <source media="(max-width: 820px)" srcset="assets/img/projects/tzar-hub-m.webp" width="699" height="183">
+                <img class="project__thumb" src="assets/img/projects/tzar-hub.webp" width="687" height="198" alt="" loading="lazy" decoding="async">
+              </picture>
+              <svg class="project__go" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+          </li>
+          <li class="project" style="--x:373;--y:134;--w:227;--xm:351;--ym:124;--wm:232">
+            <a class="project__link" href="https://github.com/2md55nmxkw-arch/kimera" rel="noopener">
+              <span class="project__icon"><span class="icon icon--wings"></span></span>
+              <span class="project__body">
+                <h3 class="project__name">Kimera<svg class="project__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></h3>
+                <span class="project__desc">a browser art piece with Teto.</span>
+              </span>
+              <picture>
+                <source media="(max-width: 820px)" srcset="assets/img/projects/kimera-m.webp" width="696" height="186">
+                <img class="project__thumb" src="assets/img/projects/kimera.webp" width="681" height="207" alt="" loading="lazy" decoding="async">
+              </picture>
+              <svg class="project__go" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+          </li>
+          <li class="project" style="--x:374;--y:208;--w:226;--xm:352;--ym:193;--wm:232">
+            <a class="project__link" href="https://github.com/2md55nmxkw-arch/endfield-il2dump" rel="noopener">
+              <span class="project__icon"><span class="icon icon--layers"></span></span>
+              <span class="project__body">
+                <h3 class="project__name">Endfield-IL2Dump<svg class="project__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></h3>
+                <span class="project__desc">an offline metadata dumper for<br>Arknights: Endfield (IL2CPP).</span>
+              </span>
+              <picture>
+                <source media="(max-width: 820px)" srcset="assets/img/projects/endfield-il2dump-m.webp" width="696" height="201">
+                <img class="project__thumb" src="assets/img/projects/endfield-il2dump.webp" width="678" height="207" alt="" loading="lazy" decoding="async">
+              </picture>
+              <svg class="project__go" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+          </li>
+          <li class="project" style="--x:374;--y:284;--w:226;--xm:353;--ym:267;--wm:231">
+            <a class="project__link" href="https://github.com/2md55nmxkw-arch/Loliland-ModLoader" rel="noopener">
+              <span class="project__icon"><span class="icon icon--puzzle"></span></span>
+              <span class="project__body">
+                <h3 class="project__name">Loliland-Modloader<svg class="project__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></h3>
+                <span class="project__desc">a Windows mod loader for<br>Loliland launcher builds.</span>
+              </span>
+              <picture>
+                <source media="(max-width: 820px)" srcset="assets/img/projects/loliland-modloader-m.webp" width="693" height="195">
+                <img class="project__thumb" src="assets/img/projects/loliland-modloader.webp" width="678" height="204" alt="" loading="lazy" decoding="async">
+              </picture>
+              <svg class="project__go" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ============ LAB ============ -->
+      <section class="lab" id="lab" aria-labelledby="lab-title">
+        <!-- checklist pinned to the wall (desktop only) -->
+        <div class="lab__note">
+          <span class="sheet lab__sheet" aria-hidden="true"></span>
+          <ul class="checklist">
+            <li class="is-done"><svg class="checklist__box" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-box"/><use href="#i-tick"/></svg><span>reverse<span class="sr-only"> (done)</span></span></li>
+            <li class="is-done"><svg class="checklist__box" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-box"/><use href="#i-tick"/></svg><span>runtimes<span class="sr-only"> (done)</span></span></li>
+            <li class="is-done"><svg class="checklist__box" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-box"/><use href="#i-tick"/></svg><span>formats<span class="sr-only"> (done)</span></span></li>
+            <li><svg class="checklist__box" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-box"/></svg><span>experiments<span class="sr-only"> (to do)</span></span></li>
+          </ul>
+        </div>
+
+        <picture>
+          <source media="(max-width: 820px)" srcset="assets/img/lab-m.webp" width="2001" height="486">
+          <img class="lab__art" src="assets/img/lab.webp" width="2001" height="597" loading="lazy" decoding="async"
+               alt="An old CRT monitor showing a pixel cat, a beige PC tower, a CD drive and loose discs on a desk. The cat mascot sits on top of the monitor.">
+        </picture>
+
+        <h2 class="tag lab__tag" id="lab-title"><span>Lab</span></h2>
+        <svg class="lab__slashes" viewBox="0 0 36 24" preserveAspectRatio="none" aria-hidden="true"><use href="#i-slashes"/></svg>
+
+        <p class="lab__text">a playground for ideas, prototypes,<br>
+          and random tools that might become<br>
+          something bigger.</p>
+      </section>
+
+      <!-- ============ GALLERY ============ -->
+      <section class="gallery" id="gallery" aria-labelledby="gallery-title">
+        <!-- scraps, sketches and red strokes behind the photos (desktop only) -->
+        <img class="gallery__decor" src="assets/img/gallery-decor.webp" width="2001" height="720" alt="" loading="lazy" decoding="async">
+
+        <h2 class="tag gallery__tag" id="gallery-title"><span>Gallery</span></h2>
+        <svg class="gallery__camera" viewBox="0 0 30 26" aria-hidden="true">
+          <path d="M3 7.5h5.6l2.4-4h8l2.4 4H27a2 2 0 0 1 2 2V22a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9.5a2 2 0 0 1 2-2Z"/>
+          <circle cx="15" cy="15.2" r="4.6"/>
+        </svg>
+
+        <p class="gallery__text">screenshots, experiments,<br>
+          <span>and that one strange browser art piece.</span></p>
+
+        <ul class="gallery__list">
+          <li class="shot" style="--x:31;--y:85;--w:157;--xm:37;--ym:59;--wm:146">
+            <a class="shot__open" href="assets/img/gallery/moon-lg.webp" data-w="628" data-h="504">
+              <picture>
+                <source media="(max-width: 820px)" srcset="assets/img/gallery/moon-m.webp" width="438" height="330">
+                <img src="assets/img/gallery/moon.webp" width="471" height="378" loading="lazy" decoding="async" alt="A red moon over dark water, a lone figure standing in its reflection.">
+              </picture>
+            </a>
+          </li>
+          <li class="shot" style="--x:171;--y:88;--w:130;--xm:176;--ym:60;--wm:120">
+            <a class="shot__open" href="assets/img/gallery/cracks-lg.webp" data-w="520" data-h="508">
+              <picture>
+                <source media="(max-width: 820px)" srcset="assets/img/gallery/cracks-m.webp" width="360" height="333">
+                <img src="assets/img/gallery/cracks.webp" width="390" height="381" loading="lazy" decoding="async" alt="Cracked glass spreading in a branching, nerve-like pattern.">
+              </picture>
+            </a>
+          </li>
+          <li class="shot" style="--x:295;--y:81;--w:116;--xm:290;--ym:54;--wm:117">
+            <a class="shot__open" href="assets/img/gallery/cat-lg.webp" data-w="464" data-h="480">
+              <picture>
+                <source media="(max-width: 820px)" srcset="assets/img/gallery/cat-m.webp" width="351" height="315">
+                <img src="assets/img/gallery/cat.webp" width="348" height="360" loading="lazy" decoding="async" alt="The cat mascot as a black silhouette with two pale eyes.">
+              </picture>
+            </a>
+          </li>
+          <li class="shot" style="--x:404;--y:68;--w:130;--xm:401;--ym:35;--wm:132">
+            <a class="shot__open" href="assets/img/gallery/tower-lg.webp" data-w="520" data-h="544">
+              <picture>
+                <source media="(max-width: 820px)" srcset="assets/img/gallery/tower-m.webp" width="396" height="381">
+                <img src="assets/img/gallery/tower.webp" width="390" height="408" loading="lazy" decoding="async" alt="A red tower block rising over a dark city.">
+              </picture>
+            </a>
+          </li>
+          <li class="shot" style="--x:521;--y:79;--w:118;--xm:523;--ym:44;--wm:115">
+            <a class="shot__open" href="assets/img/gallery/flower-lg.webp" data-w="472" data-h="512">
+              <picture>
+                <source media="(max-width: 820px)" srcset="assets/img/gallery/flower-m.webp" width="345" height="363">
+                <img src="assets/img/gallery/flower.webp" width="354" height="384" loading="lazy" decoding="async" alt="A pale flower in halftone against black.">
+              </picture>
+            </a>
+          </li>
+        </ul>
+
+        <!-- TODO: link to the full gallery -->
+        <a class="strip gallery__more" href="#" aria-label="More images" style="--shape:var(--shape-strip-2)"><i></i><i></i><i></i></a>
+      </section>
+
+      <!-- ============ NOTES ============ -->
+      <section class="notes" id="notes" aria-labelledby="notes-title">
+        <!-- sketch sheets, the "0401" scraps and the hairline that closes the section -->
+        <picture>
+          <source media="(max-width: 820px)" srcset="assets/img/notes-decor-m.webp" width="738" height="276">
+          <img class="notes__decor" src="assets/img/notes-decor.webp" width="2001" height="534" alt="" loading="lazy" decoding="async">
+        </picture>
+
+        <h2 class="tag notes__tag" id="notes-title">
+          <svg class="notes__badge" viewBox="0 0 30 36" aria-hidden="true">
+            <path class="notes__badge-back" d="M4.5 1.5H19.5L28.5 10.5V32a2.5 2.5 0 0 1-2.5 2.5H4.5A2.5 2.5 0 0 1 2 32V4a2.5 2.5 0 0 1 2.5-2.5Z"/>
+            <path class="notes__badge-doc" d="M7.5 6.5H18l5.5 5.5V29.5H7.5Z"/>
+            <path class="notes__badge-lines" d="M10.8 18.3h5M10.8 22h8.5M10.8 25.7h8.5M18 6.8v5h5"/>
+          </svg>
+          <span>Notes</span>
+        </h2>
+
+        <p class="notes__text">updates, changes, fixes<br>
+          and other stuff...</p>
+
+        <div class="notes__paper">
+          <span class="sheet notes__sheet" aria-hidden="true"></span>
+          <!-- the three latest entries of the changelog; generated from data/changelog.json by tools/build-changelog.mjs -->
+          <ul class="notes__list">
+            <!-- notes:start (generated, do not edit by hand) -->
+            <li><a class="note" href="changelog.html#kimera"><svg class="note__icon" viewBox="0 0 14 17" aria-hidden="true"><use href="#i-doc"/></svg><span class="note__title">Kimera — First public version</span><time class="note__date" datetime="2026-11-24">2026-11-24</time><svg class="note__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <li><a class="note" href="changelog.html#tzar-hub"><svg class="note__icon" viewBox="0 0 14 17" aria-hidden="true"><use href="#i-doc"/></svg><span class="note__title">Tzar-Hub — Keyless and open source</span><time class="note__date" datetime="2026-11-15">2026-11-15</time><svg class="note__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <li><a class="note" href="changelog.html#tzar-hub-2026-11-12"><svg class="note__icon" viewBox="0 0 14 17" aria-hidden="true"><use href="#i-doc"/></svg><span class="note__title">Tzar-Hub — Accessories stay on</span><time class="note__date" datetime="2026-11-12">2026-11-12</time><svg class="note__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+            <!-- notes:end -->
+          </ul>
+          <a class="notes__more" href="changelog.html"><span class="notes__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="scribble">more<svg viewBox="0 0 52 8" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M1 5.6C14 4.3 30 3.3 51 2.6"/></svg></span></a>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="footer">
+      <picture>
+        <source media="(max-width: 820px)" srcset="assets/img/footer-m.webp" width="1654" height="610">
+        <img class="footer__art" src="assets/img/footer.webp" width="1654" height="707" loading="lazy" decoding="async"
+             alt="The girl in a hoodie marked 0401 and the cat sit side by side on a rooftop, seen from behind, watching a red moon rise over the city.">
+      </picture>
+
+      <a class="footer__logo" href="#top">2MD55.ARCH</a>
+      <svg class="footer__star" viewBox="-11 -14.4 22 28.8" preserveAspectRatio="none" aria-hidden="true"><use href="#i-star"/></svg>
+
+      <ul class="footer__links">
+          <li><a href="https://github.com/2md55nmxkw-arch" rel="noopener"><span class="footer__icon"><span class="icon icon--github"></span></span><span class="footer__label">GitHub</span><svg class="footer__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li><a href="https://hub.2md.space" rel="noopener"><span class="footer__icon"><span class="icon icon--planet"></span></span><span class="footer__label">hub.2md.space</span><svg class="footer__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+          <li><a href="https://2md55nmxkw-arch.github.io/kimera/" rel="noopener"><span class="footer__icon"><span class="icon icon--k"></span></span><span class="footer__label">Kimera</span><svg class="footer__arrow" viewBox="0 0 12 12" aria-hidden="true"><use href="#i-arrow"/></svg></a></li>
+      </ul>
+
+      <span class="slashes footer__slashes" aria-hidden="true"></span>
+
+      <svg class="stamp footer__stamp" viewBox="0 0 70 35" aria-hidden="true">
+        <text class="stamp__num" x="35.5" y="24.7" text-anchor="middle" transform="rotate(-11.5 35.5 17.8)">0401</text>
+        <use href="#stamp-ring"/>
+      </svg>
+    </footer>
+
+  </div>
+
+  <!-- ============ LIGHTBOX: a gallery photo up close (opened by js/main.js) ============ -->
+  <dialog class="lightbox" aria-label="Gallery">
+    <button class="strip lightbox__btn lightbox__btn--close" type="button" aria-label="Close" style="--shape:var(--shape-strip-3)">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8"/></svg>
+    </button>
+    <figure class="lightbox__figure">
+      <img class="lightbox__img" alt="" draggable="false">
+    </figure>
+    <div class="lightbox__bar">
+      <button class="strip lightbox__btn lightbox__btn--prev" type="button" aria-label="Previous photo" style="--shape:var(--shape-strip-1)">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M7.8 1.6 3.4 6l4.4 4.4"/></svg>
+      </button>
+      <span class="lightbox__count" aria-live="polite"></span>
+      <button class="strip lightbox__btn lightbox__btn--next" type="button" aria-label="Next photo" style="--shape:var(--shape-strip-2)">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.2 1.6 8.6 6l-4.4 4.4"/></svg>
+      </button>
+    </div>
+  </dialog>
+
+  <script src="js/loader.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
