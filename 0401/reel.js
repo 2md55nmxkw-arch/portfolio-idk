@@ -2,6 +2,9 @@
 // A little film drawn on a canvas: our Teto dances through 17 poses, one per beat, in front of the
 // site's own city and room, between two strips of film. There is no player: it loads, starts and loops.
 //
+// The sound (assets/soundtrack.mp3) is the audio of the short video this page grew out of: 16 seconds of
+// music at 120 beats a minute, then a quiet second and a half. The dance is timed to it.
+//
 // Sound: browsers only let a page play audio by itself if the visitor has already interacted with
 // the site (for example, arrived here through the hidden trigger on the main page). Otherwise the
 // picture starts silently and the music joins in, in sync, on the first click, tap or key press.
@@ -11,10 +14,11 @@
   const W = 1024;
   const H = 576;
   const FPS = 14;                 // the picture moves in steps, like a hand-drawn film
-  const BEAT = 0.5;               // seconds: 120 beats a minute, as in tools/build-reel-music.py
+  const BEAT = 0.5;               // seconds: the soundtrack runs at 120 beats a minute
   const BEATS = 32;
-  const LOOP = BEAT * BEATS;      // 16 seconds
-  const LOOP_START = 0.3;         // the music file is a second longer than the loop; we loop a window inside it
+  const DANCE_TIME = BEAT * BEATS;   // 16 seconds of dancing
+  const FIRST_BEAT = 0.12;        // where the first beat falls in the soundtrack
+  let loop = 17.65;               // the whole soundtrack; replaced by its exact length once it is decoded
 
   const INK = '#12100f';
   const CREAM = '#e9bfa9';
@@ -115,9 +119,10 @@
   async function loadMusic() {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return;
-    const data = await (await fetch('assets/loop.mp3')).arrayBuffer();
+    const data = await (await fetch('assets/soundtrack.mp3')).arrayBuffer();
     audioCtx = new Ctx();
     music = await audioCtx.decodeAudioData(data);
+    loop = music.duration;
   }
 
   async function preload() {
@@ -230,14 +235,17 @@
 
   function render(pos, force = false) {
     if (!ready) return;
-    const frame = Math.floor(((pos % LOOP) + LOOP) % LOOP * FPS + 1e-6);
+    const frame = Math.floor(((pos % loop) + loop) % loop * FPS + 1e-6);
     if (frame === shownFrame && !force) return;
     shownFrame = frame;
-    const time = frame / FPS;                     // everything moves on the frame grid
+    const time = Math.max(0, frame / FPS - FIRST_BEAT);   // since the first beat; everything moves on the frame grid
     const beat = Math.min(BEATS - 1, Math.floor(time / BEAT));
-    const inBeat = time / BEAT - beat;
+    const inBeat = Math.min(1, time / BEAT - beat);
     const bar = Math.floor(beat / 4);
-    const inBar = (time - bar * 4 * BEAT) / (4 * BEAT);
+    const inBar = Math.min(1, (time - bar * 4 * BEAT) / (4 * BEAT));
+    // after the dance the music dies away: she stays where she fell and the picture goes dark
+    const tail = loop - FIRST_BEAT - DANCE_TIME;
+    const dark = Math.max(0, Math.min(1, (time - DANCE_TIME - (tail - 0.7)) / 0.7));
 
     ctx.fillStyle = INK;
     ctx.fillRect(0, 0, W, H);
@@ -249,8 +257,12 @@
     ctx.fillRect(0, STRIP_Y, W, STRIP_H);
 
     drawWear(frame);
-    drawFilm(time);
+    drawFilm(frame / FPS);
     drawDancer(DANCE[beat], inBeat, frame);   // over the film edges: a jump breaks out of the frame
+    if (dark > 0) {
+      ctx.fillStyle = `rgba(18,16,15,${(dark * 0.92).toFixed(3)})`;
+      ctx.fillRect(0, 0, W, H);
+    }
 
     const caption = Math.floor(bar / 2);
     drawCaption(caption);
@@ -266,8 +278,8 @@
   let audioZero = 0;
 
   const position = () => (sounding
-    ? (audioCtx.currentTime - audioZero) % LOOP
-    : ((performance.now() - silentZero) / 1000) % LOOP);
+    ? (audioCtx.currentTime - audioZero) % loop
+    : ((performance.now() - silentZero) / 1000) % loop);
 
   function tick() {
     if (running) render(position());
@@ -289,13 +301,11 @@
     const at = position();
     const source = audioCtx.createBufferSource();
     source.buffer = music;
-    source.loop = true;
-    source.loopStart = LOOP_START;
-    source.loopEnd = LOOP_START + LOOP;
+    source.loop = true;                          // the whole recording, over and over
     const volume = audioCtx.createGain();
-    volume.gain.value = 0.85;
+    volume.gain.value = 0.6;                     // the recording is very loud
     source.connect(volume).connect(audioCtx.destination);
-    source.start(0, at < LOOP_START ? at + LOOP : at);
+    source.start(0, at);
     audioZero = audioCtx.currentTime - at;
     sounding = true;
     for (const type of GESTURES) removeEventListener(type, unlock, true);

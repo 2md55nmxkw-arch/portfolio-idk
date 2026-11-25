@@ -141,7 +141,7 @@ The site is hosted on Vercel as plain static files. The Vercel project is linked
 
 The code and documentation in this repository are released under the **[MIT License](LICENSE)**.
 
-The 2MD55.ARCH name and logo, the Kasane Teto artwork and the third-party fonts and icon listed below are not covered by MIT.
+The 2MD55.ARCH name and logo, the Kasane Teto artwork, the soundtrack in `0401/` and the third-party fonts and icon listed below are not covered by MIT.
 
 ## Credits
 
