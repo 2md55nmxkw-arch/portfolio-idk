@@ -229,3 +229,31 @@
   if (document.fonts) document.fonts.ready.then(aim);
   addEventListener('load', aim, { once: true });
 })();
+
+// ---------- 0401 ----------
+// The hidden reel at /0401/ is not linked anywhere. Two ways in: type 0401 anywhere on the site,
+// or click one of the "0401" stamps four times within two seconds.
+(() => {
+  const open = () => location.assign('/0401/');
+
+  let typed = '';
+  let lastKey = 0;
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+    if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+    const now = Date.now();
+    if (now - lastKey > 2000) typed = '';
+    lastKey = now;
+    if (!/^\d$/.test(e.key)) { typed = ''; return; }
+    typed = (typed + e.key).slice(-4);
+    if (typed === '0401') open();
+  });
+
+  let clicks = [];
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest || !e.target.closest('[data-secret-trigger]')) return;
+    const now = Date.now();
+    clicks = [...clicks.filter((t) => now - t < 2000), now];
+    if (clicks.length >= 4) { clicks = []; open(); }
+  });
+})();

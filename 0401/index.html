@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>0401</title>
+  <!-- a hidden page: nothing links here and search engines are asked to stay away -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#12100f">
+
+  <!-- keeps the relative paths below working whether the address ends with a slash or not -->
+  <base href="/0401/">
+  <!-- the handwriting of the captions -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam&display=swap">
+  <link rel="stylesheet" href="reel.css">
+</head>
+<body>
+
+  <!-- No player and no buttons: the reel loads, starts by itself and loops (see reel.js). -->
+  <main class="reel">
+    <canvas class="reel__screen" id="reel" width="1024" height="576"
+            aria-label="A short looping animation: a red-haired girl in a hoodie dances on a strip of film, in front of a city under a red moon."></canvas>
+
+    <!-- the only text on the page: "0401" and a percentage while it loads, a hint if the browser holds the sound back -->
+    <p class="reel__note" id="note"><b>0401</b><span id="note-text">0%</span></p>
+
+    <span class="sr-only" id="subtitles"></span>
+  </main>
+
+  <script src="dancer.js"></script>
+  <script src="reel.js"></script>
+</body>
+</html>
